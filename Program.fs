@@ -4,11 +4,22 @@ open System
 
 [<EntryPoint>]
 let main argv =
-    // Day01.solve()
-    // Day02.solve()
-    // Day03.solve()
+    let solutions = 
+        [ 
+          (1, Day01.solve); (2, Day02.solve); (3, Day03.solve) 
+          (4, Day04.solve)
+        ] |> Map.ofList
 
-    Day90.solve()
-
+    match argv |> List.ofArray with
+    | [] -> Map.iter (fun _ solve -> solve()) solutions
+    | days ->
+        days |> List.iter (fun day ->
+            match Int32.TryParse day with
+            | true, day when day > 0 && day < 26 -> 
+                match Map.tryFind day solutions with
+                | Some solve -> solve()
+                | _ -> printfn "Day %d hasn't been implemented yet" day
+            | _ -> printfn "Invalid argument, day must be an integer between 1-25")
+        
 
     0 // return an integer exit code

@@ -1,6 +1,8 @@
 module Day03
 open System.Text.RegularExpressions
 open Utilities
+open System.Diagnostics
+open System.Threading
 
 type Claim = { id: int; x: int; y: int; width: int; height: int }
 type Inch = { claimId: int; x: int; y: int }
@@ -14,7 +16,7 @@ let claimParser line =
       width = int m.Groups.[4].Value
       height = int m.Groups.[5].Value }
 
-let getInches() =
+let inches =
     getMany 3 claimParser
     |> Seq.collect (fun claim ->
         seq { 
@@ -23,14 +25,12 @@ let getInches() =
                     for x in claim.x+1..claim.x+claim.width ->
                         { claimId = claim.id; x = x; y = y } } })
 
-let inches = getInches()
-
-let part1 =
+let part1() =
     Seq.groupBy (fun inch -> inch.x, inch.y) inches
     |> Seq.filter (fun (_, x) -> Seq.length x > 1)
     |> Seq.length
 
-let part2 =
+let part2() =
     let claimsCount =
         Seq.groupBy (fun inch -> inch.claimId) inches
         |> Seq.map (fun (key, values) -> key, Seq.length values)
@@ -43,7 +43,4 @@ let part2 =
     |> Seq.find (fun (claimId, value) -> Seq.length value = Map.find claimId claimsCount)
     |> fun (claimId, _) -> claimId
 
-let solve() =
-    printfn "### Day 03 ###"
-    printfn "Part 1: %d" part1
-    printfn "Part 2: %d" part2
+let solve() = printDay 3 part1 part2
