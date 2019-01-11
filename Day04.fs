@@ -3,7 +3,7 @@ module Day04
 open System
 open Utilities
 
-type Guard = { asleep: int; date: DateTime; guardId: int}
+type Record = { asleep: int; date: DateTime; guardId: int}
 
 let parser = function
 | Regex @"^\[(.*?)\] Guard #(\d+) begins shift$" [ date; id ] -> 
