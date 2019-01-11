@@ -48,7 +48,8 @@ let part1() =
             Seq.collect (fun (_, minutes) -> minutes) records
             |> Seq.groupBy (fun (minute, _) -> minute)
             |> Seq.maxBy (fun (_, minutes) -> 
-                Seq.filter (fun (_, asleep) -> asleep = 1) minutes |> Seq.length)
+                Seq.filter (fun (_, asleep) -> asleep = 1) minutes 
+                |> Seq.length)
             |> fun (minute, _) -> minute
         id * minute
 
