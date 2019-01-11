@@ -7,7 +7,6 @@ open System.Threading
 type Claim = { id: int; x: int; y: int; width: int; height: int }
 type Inch = { claimId: int; x: int; y: int }
 
-
 let claimParser line =
     let m = Regex.Match(line, @"\#(\d+) \@ (\d+),(\d+): (\d+)x(\d+)")
     { id = int m.Groups.[1].Value
