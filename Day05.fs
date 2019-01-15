@@ -7,10 +7,10 @@ open System
 let polymers = getSingle 5 (string)
 
 let react polymers = 
-   let rec loop polymers =
+   let rec loop (polymers: string) =
       let reaction = Seq.pairwise polymers |> Seq.tryFind (fun (a, b) -> abs (int a - int b) = 32)
       match reaction with
-      | Some (a, b) -> loop (string (polymers.Replace((string a) + (string b), "")))
+      | Some (a, b) -> loop (polymers.Replace((string a) + (string b), ""))
       | _ -> polymers
    Seq.length (loop polymers)
 
