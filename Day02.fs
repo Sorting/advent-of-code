@@ -21,4 +21,4 @@ let part2() =
     |> Seq.find (fun (_, values) -> Seq.length values = 2)
     |> fun ((_, commonLetters), _) -> commonLetters
 
-let solve() = printDay 2 part1 part2
+let solve() =printDay 2 part1 part2

@@ -21,11 +21,11 @@ let printDay day part1 part2 =
     
     let sw = Stopwatch.StartNew()
 
-    printfn "Part1: %s" (part1().ToString())
+    printfn "Part 1: %s" (part1().ToString())
     printExecutionTime sw.Elapsed.TotalSeconds
     sw.Restart()
     
-    printfn "Part2: %s" (part2().ToString())
+    printfn "Part 2: %s" (part2().ToString())
     printExecutionTime sw.Elapsed.TotalSeconds
     sw.Stop()
 
@@ -33,3 +33,12 @@ let (|Regex|_|) pattern input =
     let m = Regex.Match(input, pattern)
     if m.Success then Some(List.tail [ for g in m.Groups -> g.Value ])
     else None
+
+let unpairwise (x) = 
+    seq {
+        if not(Seq.isEmpty x) then
+            let (a, b) = Seq.head x
+            yield a
+            yield b
+            yield! Seq.skip 1 x |> Seq.map (fun (_, b) -> b)
+    }
