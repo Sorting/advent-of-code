@@ -2,7 +2,6 @@ module Day05
 
 open System
 open Utilities
-open System
 
 let polymers = getSingle 5 (string)
 
