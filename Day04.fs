@@ -30,13 +30,12 @@ let records =
     |> Seq.groupBy (fun x -> x.date.Date)
     |> Seq.map (fun (_, records) -> 
         let id = Seq.map (fun x -> x.guardId) records |> Seq.max
-        id, 
-        Seq.map (fun x -> { x with guardId = id }) records
+        (id, Seq.map (fun x -> { x with guardId = id }) records
         |> Seq.pairwise
         |> Seq.collect (fun (first, second) -> 
             [ for i in first.date.Minute..second.date.Minute-1 -> 
                 (i, first.asleep) ]
-        ))
+        )))
     |> Seq.groupBy (fun (id, _) -> id)
 
 let part1() =
@@ -67,11 +66,10 @@ let part2() =
                     Seq.filter (fun (_, asleep) -> asleep = 1) minutes
                     |> Seq.length) groupedMinutes
                 |> fun (minute, minutes) -> 
-                    minute, 
-                    minutes 
+                    (minute, minutes 
                     |> Seq.filter (fun (_, asleep) -> asleep = 1) 
-                    |> Seq.length
-            id, minute, count)
+                    |> Seq.length)
+            (id, minute, count))
     |> Seq.maxBy (fun (_, _, count) -> count)
     |> fun (id, minute, _) -> id * minute
 
