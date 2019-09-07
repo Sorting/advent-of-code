@@ -8,7 +8,7 @@ type Claim = { id: int; x: int; y: int; width: int; height: int }
 type Inch = { claimId: int; x: int; y: int }
 
 let claimParser line =
-    let m = Regex.Match(line, @"\#(\d+) \@ (\d+), (\d+): (\d+)x(\d+)")
+    let m = Regex.Match(line, @"\#(\d+) \@ (\d+),(\d+): (\d+)x(\d+)")
     { id = int m.Groups.[1].Value
       x = int m.Groups.[2].Value
       y = int m.Groups.[3].Value

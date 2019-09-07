@@ -4,7 +4,7 @@ open Utilities
 
 type Location =
 | Coordinate of int * int
-| Fence
+| Fence of int * int
 
 let coordinates = Set.ofSeq (getMany 6 (fun x -> 
     match x.Split(',') with
@@ -26,18 +26,19 @@ let part1() =
                         |> Seq.filter (fun (distance, _) -> distance > 0)
                         |> Seq.groupBy (fun (distance, _) -> distance)
 
-                    // if Seq.exists (fun (_, v) -> (Seq.length v) > 1) group
-                    // then (x, y), Fence
-                    // else
-                    Seq.minBy (fun (key, _) -> key) group
-                    |> fun (_, v) -> (x, y), Seq.head v |> fun (_, (x, y)) -> Coordinate(x, y)
+                    if Seq.exists (fun (_, v) -> (Seq.length v) > 1) group
+                    then Fence(x, y)
+                    else
+                        Seq.minBy (fun (key, _) -> key) group
+                        |> fun (_, v) -> (Seq.head v |> fun (_, (x, y)) -> Coordinate(x, y)
                 ] ]
     matrix 
-    |> Seq.choose (fun (_, location) -> match location with Coordinate(x, y) -> Some (x, y) | Fence -> None) 
-    |> Seq.groupBy (id)
-    |> Seq.length
+    |> Seq.choose (fun (_, location) -> match location with Coordinate(x, y) -> Some (x, y) | Fence(x, y) -> None) 
+    |> Seq.countBy (id)
+    |> Seq.maxBy (snd)
+    |> snd
 
     
-let part2() = manhattanDistance (0, 0) (201, 235)
+let part2() = 0
 
 let solve() = printDay 6 part1 part2
