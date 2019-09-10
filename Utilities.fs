@@ -1,18 +1,18 @@
 module Utilities
+
 open System.IO
 open System.Text
 open System.Text.RegularExpressions
 open System.Diagnostics
-open System.Threading
 open System
 
-let getInputPath day = sprintf "%s/input/day%s.txt" (Directory.GetCurrentDirectory()) (if day < 10 then sprintf "0%d" day else string day)
-let getSingle day parser = File.ReadAllText(getInputPath day, Encoding.UTF8) |> parser
-let getMany day parser = File.ReadAllLines(getInputPath day, Encoding.UTF8) |> Array.map parser |> Array.toSeq
+let getInputPath year day = sprintf "%s/%d/input/day%s.txt" (Directory.GetCurrentDirectory()) year (if day < 10 then sprintf "0%d" day else string day)
+let getSingle year day parser = File.ReadAllText(getInputPath year day, Encoding.UTF8) |> parser
+let getMany year day parser = File.ReadAllLines(getInputPath year day, Encoding.UTF8) |> Array.map parser |> Array.toSeq
 
-let printDay day part1 part2 =
+let printDay year day part1 part2 =
     Console.ForegroundColor <- ConsoleColor.Yellow
-    printfn "### Day %s ###" (if day < 10 then sprintf "0%d" day else string day)
+    printfn "### %d Day %s ###" year (if day < 10 then sprintf "0%d" day else string day)
     Console.ForegroundColor <- ConsoleColor.White
     let printExecutionTime seconds = 
         Console.ForegroundColor <- ConsoleColor.Green
@@ -42,3 +42,4 @@ let unpairwise (x) =
             yield b
             yield! Seq.skip 1 x |> Seq.map (fun (_, b) -> b)
     }
+    
