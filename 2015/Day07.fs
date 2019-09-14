@@ -93,8 +93,8 @@ module Day07 =
         |> List.ofSeq
         |> List.map parseInstruction
 
-    let overrideWireByValue wire value instructions =
-        (instructions |> List.filter (function (AssignByValue(assignWire, _)) -> assignWire <> wire | _ -> true)) 
+    let overrideWire wire value instructions =
+        (instructions |> List.filter (function (AssignByValue(assignWire, _)) -> assignWire <> wire | _ -> true))
             @ [ AssignByValue(wire, value) ]
 
     let getCircuit instructions = 
@@ -105,10 +105,10 @@ module Day07 =
         getInstructions
         |> getCircuit
         |> Map.find "a"
-        
+
     let part2() = 
         getInstructions 
-        |> overrideWireByValue "b" (part1()) 
+        |> overrideWire "b" (part1()) 
         |> getCircuit 
         |> Map.find "a"
 
