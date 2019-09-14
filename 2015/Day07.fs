@@ -4,35 +4,35 @@ module Day07 =
     open Utilities
 
     type Instruction =
-        | AssignByValue of string * int
-        | AssignByWire of string * string
-        | And of string * string * string
-        | AndByInt of int  * string * string
-        | Or of string * string * string
-        | LeftShift of string * int * string
-        | RightShift of string * int * string
-        | Not of string * string
-        | Unknown of string
+        | ASSIGN of string * int
+        | ASSIGNByWire of string * string
+        | AND of string * string * string
+        | ANDByValue of int  * string * string
+        | OR of string * string * string
+        | LSHIFT of string * int * string
+        | RSHIFT of string * int * string
+        | NOT of string * string
+        | UNKNOWN of string
 
     let parseInstruction = 
         function
         | Regex @"^(\d+) -> ([a-z]+)$" [value; wire] ->
-            AssignByValue(wire, int value)
+            ASSIGN(wire, int value)
         | Regex @"^([a-z]+) -> ([a-z]+)$" [wire; assignWire] ->
-            AssignByWire(wire, assignWire)
+            ASSIGNByWire(wire, assignWire)
         | Regex @"^([a-z]+) AND ([a-z]+) -> ([a-z]+)$" [leftWire; rightWire; assignWire] ->
-            And(leftWire, rightWire, assignWire)
+            AND(leftWire, rightWire, assignWire)
         | Regex @"^(\d+) AND ([a-z]+) -> ([a-z]+)$" [value; wire; assignWire] ->
-            AndByInt(int value, wire, assignWire)
+            ANDByValue(int value, wire, assignWire)
         | Regex @"^([a-z]+) OR ([a-z]+) -> ([a-z]+)$" [leftWire; rightWire; assignWire] ->
-            Or(leftWire, rightWire, assignWire)
+            OR(leftWire, rightWire, assignWire)
         | Regex @"^([a-z]+) LSHIFT (\d+) -> ([a-z]+)$" [wire; value; assignWire ] ->
-            LeftShift(wire, int value, assignWire)
+            LSHIFT(wire, int value, assignWire)
         | Regex @"^([a-z]+) RSHIFT (\d+) -> ([a-z]+)$" [wire; value; assignWire ] ->
-            RightShift(wire, int value, assignWire)
+            RSHIFT(wire, int value, assignWire)
         | Regex @"^NOT ([a-z]+) -> ([a-z]+)$" [wire; assignWire] ->
-            Not(wire, assignWire)
-        | x -> Unknown x
+            NOT(wire, assignWire)
+        | x -> UNKNOWN x
 
     let wireExist wire circuit =
         match Map.tryFind wire circuit with
@@ -44,49 +44,49 @@ module Day07 =
         | Failure
         | MissingWire
 
-    let invokeInstruction circuit =
+    let evaluteInstruction circuit =
         function
-        | AssignByValue(wire, value) -> 
+        | ASSIGN(wire, value) -> 
             Ok (circuit |> Map.add wire value)
-        | AssignByWire(wire, assignWire) ->
+        | ASSIGNByWire(wire, assignWire) ->
             if wireExist wire circuit
             then Ok (circuit |> Map.add assignWire (Map.find wire circuit))
             else MissingWire
-        | And(leftWire, rightWire, assignWire) -> 
+        | AND(leftWire, rightWire, assignWire) -> 
             if wireExist leftWire circuit && wireExist rightWire circuit
             then Ok (circuit |> Map.add assignWire ((Map.find leftWire circuit) &&& (Map.find rightWire circuit)))
             else MissingWire
-        | AndByInt(value, wire, assignWire) -> 
+        | ANDByValue(value, wire, assignWire) -> 
             if wireExist wire circuit 
             then Ok (circuit |> Map.add assignWire (value &&& ((Map.find wire circuit))))
             else MissingWire
-        | Or(leftWire, rightWire, assignWire) -> 
+        | OR(leftWire, rightWire, assignWire) -> 
             if wireExist leftWire circuit && wireExist rightWire circuit
             then Ok (circuit |> Map.add assignWire ((Map.find leftWire circuit) ||| (Map.find rightWire circuit)))
             else MissingWire
-        | LeftShift(wire, value, assignWire) -> 
+        | LSHIFT(wire, value, assignWire) -> 
             if wireExist wire circuit 
             then Ok (circuit |> Map.add assignWire ((Map.find wire circuit) <<< value))
             else MissingWire
-        | RightShift(wire, value, assignWire) -> 
+        | RSHIFT(wire, value, assignWire) -> 
             if wireExist wire circuit
             then Ok (circuit |> Map.add assignWire ((Map.find wire circuit) >>> value))
             else MissingWire
-        | Not(wire, assignWire) -> 
+        | NOT(wire, assignWire) -> 
             if wireExist wire circuit 
             then Ok(circuit |> Map.add assignWire (65536 + (~~~(Map.find wire circuit))))
             else MissingWire
-        | Unknown _ -> 
+        | UNKNOWN _ -> 
             Failure
 
-    let rec invokeInstructions circuit =
+    let rec evaluteInstructions circuit =
         function
         | [] -> circuit
         | head::tail ->
-            match invokeInstruction circuit head with
-            | Ok circuit    -> invokeInstructions circuit tail
-            | MissingWire   -> invokeInstructions circuit (tail @ [head])
-            | Failure       -> invokeInstructions circuit tail
+            match evaluteInstruction circuit head with
+            | Ok circuit    -> evaluteInstructions circuit tail
+            | MissingWire   -> evaluteInstructions circuit (tail @ [head])
+            | Failure       -> evaluteInstructions circuit tail
 
     let getInstructions = 
         getMany 2015 7 (string)   
@@ -94,12 +94,12 @@ module Day07 =
         |> List.map parseInstruction
 
     let overrideWire wire value instructions =
-        (instructions |> List.filter (function (AssignByValue(assignWire, _)) -> assignWire <> wire | _ -> true))
-            @ [ AssignByValue(wire, value) ]
+        (instructions |> List.filter (function (ASSIGN(assignWire, _)) -> assignWire <> wire | _ -> true))
+            @ [ ASSIGN(wire, value) ]
 
     let getCircuit instructions = 
         instructions
-        |> invokeInstructions Map.empty
+        |> evaluteInstructions Map.empty
 
     let part1() = 
         getInstructions
