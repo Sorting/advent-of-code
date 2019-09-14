@@ -101,7 +101,11 @@ module Day07 =
         instructions
         |> invokeInstructions Map.empty
 
-    let part1() = Map.find "a" (getCircuit getInstructions)
+    let part1() = 
+        getInstructions
+        |> getCircuit
+        |> Map.find "a"
+        
     let part2() = 
         getInstructions 
         |> overrideWireByValue "b" (part1()) 
