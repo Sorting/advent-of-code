@@ -88,10 +88,7 @@ module Day07 =
             | MissingWire   -> evaluteInstructions circuit (tail @ [head])
             | Failure       -> evaluteInstructions circuit tail
 
-    let getInstructions = 
-        getMany 2015 7 (string)   
-        |> List.ofSeq
-        |> List.map parseInstruction
+    let getInstructions = getMany 2015 7 parseInstruction |> Seq.toList
 
     let overrideWire wire value instructions =
         (instructions |> List.filter (function (ASSIGN(assignWire, _)) -> assignWire <> wire | _ -> true))
