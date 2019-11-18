@@ -6,9 +6,11 @@ module Day03 =
     let squareNumber = getSingle 2017 3 (int)
 
     type Direction = Up | Right | Down | Left
-    type State = { map: Map<int * int, int>
-                   position: (int * int) 
-                   direction: Direction }
+    
+    type State = 
+        { map: Map<int * int, int>
+          position: (int * int) 
+          direction: Direction }
 
     let initState =
         { map = Map.empty<int * int, int> |> Map.add (0, 0) 1
