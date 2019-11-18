@@ -6,6 +6,7 @@ open System
 let main argv =
     let solutions = 
         [ ((2015, 7), Year2015.Day07.solve); ((2015, 13), Year2015.Day13.solve)
+          ((2017, 3), Year2017.Day03.solve)
           ((2018, 1), Year2018.Day01.solve); ((2018, 2), Year2018.Day02.solve); ((2018, 3), Year2018.Day03.solve) 
           ((2018, 4), Year2018.Day04.solve); ((2018, 5), Year2018.Day05.solve); ((2018, 6), Year2018.Day06.solve)
         ] |> Map.ofList
