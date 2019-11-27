@@ -1,27 +1,48 @@
 namespace Year2015
-open System
-open System.Security.Cryptography
-open System.Text
 
 module Day03 =
     open Utilities
 
-    let checksum = getSingle 2015 3 (string)
-    let md5 = MD5.Create "md5"
-    let replace (oldValue: string) (newValue: string) (str: string) = str.Replace(oldValue, newValue)
+    type Direction = North | South | East | West
 
-    let findLowestBy count =
-        Seq.initInfinite (fun idx ->
-            sprintf "%s%d" checksum (idx+1)
-            |> Encoding.UTF8.GetBytes
-            |> md5.ComputeHash
-            |> BitConverter.ToString
-            |> replace "-" "", idx+1)
-        |> Seq.filter (fun (x, _) -> x.StartsWith(String('0', count)))
-        |> Seq.head
-        |> snd         
+    let parseDirection (characters: string) =
+        characters.ToCharArray()
+        |> List.ofArray
+        |> List.map (function
+            | '^' -> North
+            | '>' -> East 
+            | 'v' -> South
+            | _   -> West)
 
-    let part1() = findLowestBy 5
-    let part2() = findLowestBy 6
+    let directions = getSingle 2015 3 (string >> parseDirection)
+
+    let rec move map (x, y) directions =
+        let map' = Set.add (x, y) map
+        match directions with
+        | [] -> map'
+        | head::tail ->
+            let position = 
+                match head with
+                | North -> (x, y+1)
+                | East -> (x+1, y)
+                | South -> (x, y-1)
+                | West -> (x-1, y)
+            move map' position tail
+
+    let rec splitList list =
+        let rec split odd even = function
+            | a::b::tail -> split (odd @ [a]) (even @ [b]) tail
+            | a::tail -> split (odd @ [a]) even tail
+            | [] -> odd, even
+        split [] [] list
+
+    let part1() = move Set.empty (0, 0) directions |> Set.count
+    
+    let part2() =
+        let santaDirections, robotDirections = splitList directions
+        let santaMap, robotMap = 
+            move Set.empty (0, 0) santaDirections,
+            move Set.empty (0, 0) robotDirections
+        Set.union robotMap santaMap |> Set.count
     
     let solve() = printDay 2015 3 part1 part2
