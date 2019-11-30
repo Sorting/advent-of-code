@@ -24,9 +24,9 @@ module Day03 =
             let position = 
                 match head with
                 | North -> (x, y+1)
-                | East -> (x+1, y)
+                | East  -> (x+1, y)
                 | South -> (x, y-1)
-                | West -> (x-1, y)
+                | West  -> (x-1, y)
             move map' position tail
 
     let rec splitList list =
