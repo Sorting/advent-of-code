@@ -11,6 +11,7 @@ let main argv =
           ((2017, 3), Year2017.Day03.solve)
           ((2018, 1), Year2018.Day01.solve); ((2018, 2), Year2018.Day02.solve); ((2018, 3), Year2018.Day03.solve) 
           ((2018, 4), Year2018.Day04.solve); ((2018, 5), Year2018.Day05.solve); ((2018, 6), Year2018.Day06.solve)
+          ((2019, 1), Year2019.Day01.solve)
         ] |> Map.ofList
 
     match argv |> List.ofArray with
