@@ -27,18 +27,18 @@ module Day02 =
         loop [] (memory |> List.ofArray)
 
     let rec executeInstructions (memory: int array) = 
-           function
-           | x::xs ->
-               match x with
-               | Add (firstAddress, secondAddress, resultAddress) ->
-                    memory.[resultAddress] <- memory.[firstAddress] + memory.[secondAddress]
-                    executeInstructions memory xs
-               | Multiply (firstAddress, secondAddress, resultAddress) ->
-                    memory.[resultAddress] <- memory.[firstAddress] * memory.[secondAddress]
-                    executeInstructions memory xs
-                | Halt -> memory
-               | UnknownOpCode -> failwith "Something went wrong"
-            | _ -> memory
+       function
+       | x::xs ->
+           match x with
+           | Add (firstAddress, secondAddress, resultAddress) ->
+                memory.[resultAddress] <- memory.[firstAddress] + memory.[secondAddress]
+                executeInstructions memory xs
+           | Multiply (firstAddress, secondAddress, resultAddress) ->
+                memory.[resultAddress] <- memory.[firstAddress] * memory.[secondAddress]
+                executeInstructions memory xs
+            | Halt -> memory
+           | UnknownOpCode -> failwith "Something went wrong"
+        | _ -> memory
 
     let part1() =        
         let memory = getMemory()
@@ -61,5 +61,5 @@ module Day02 =
             | _, Some (verb, _) -> 100 * noun + verb
             | _ -> loop (noun + 1)
         loop 0
-        
+
     let solve() = printDay 2019 2 part1 part2
