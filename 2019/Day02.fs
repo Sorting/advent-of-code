@@ -60,7 +60,6 @@ module Day02 =
             | n, _ when n > 99 -> failwith "Could not find the chosen ones"            
             | _, Some (verb, _) -> 100 * noun + verb
             | _ -> loop (noun + 1)
-        loop 0         
-
-
+        loop 0
+        
     let solve() = printDay 2019 2 part1 part2
