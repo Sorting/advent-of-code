@@ -29,11 +29,11 @@ module Day02 =
     let rec executeInstructions (memory: int array) = 
        function
        | x::xs ->
-           match x with
-           | Add (firstAddress, secondAddress, resultAddress) ->
+            match x with
+            | Add (firstAddress, secondAddress, resultAddress) ->
                 memory.[resultAddress] <- memory.[firstAddress] + memory.[secondAddress]
                 executeInstructions memory xs
-           | Multiply (firstAddress, secondAddress, resultAddress) ->
+            | Multiply (firstAddress, secondAddress, resultAddress) ->
                 memory.[resultAddress] <- memory.[firstAddress] * memory.[secondAddress]
                 executeInstructions memory xs
             | Halt -> memory
