@@ -44,7 +44,7 @@ module Day02 =
         let memory = getMemory()
         memory.[1] <- 12
         memory.[2] <- 2
-        (executeInstructions memory (instructions memory)).[0]
+        Array.head (executeInstructions memory (instructions memory))
 
     let part2() = 
         let rec loop noun =
@@ -54,8 +54,8 @@ module Day02 =
                     let memory = getMemory()
                     memory.[1] <- noun
                     memory.[2] <- verb
-                    verb, (executeInstructions memory (instructions memory)).[0])
-                |> List.tryFind (fun (verb, output) -> output = 19690720)
+                    verb, Array.head (executeInstructions memory (instructions memory)))
+                |> List.tryFind (snd >> (=) 19690720)
             match noun, result with
             | n, _ when n > 99 -> failwith "Could not find the chosen ones"            
             | _, Some (verb, _) -> 100 * noun + verb
