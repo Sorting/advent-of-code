@@ -37,7 +37,7 @@ module Day02 =
                 memory.[resultAddress] <- memory.[firstAddress] * memory.[secondAddress]
                 executeInstructions memory xs
             | Halt -> memory
-           | UnknownOpCode -> failwith "Something went wrong"
+            | UnknownOpCode -> failwith "Something went wrong"
         | _ -> memory
 
     let part1() =        
