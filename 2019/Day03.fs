@@ -33,26 +33,26 @@ module Day03 =
                 | Right distance -> yield! [for i in 1..distance -> x+i, y, steps+i]
                 | Unknown        -> failwith "Something went wrong!" ]
             let map' =                        
-                List.fold (fun acc (x, y, dist) ->                    
+                List.fold (fun acc (x, y, currentSteps) ->                    
                     match Map.tryFind (x, y) acc with
-                    | Some (Point (wt, p1, p2)) when wt <> wireType -> 
-                        let steps' = (if wireType = FirstWire then (dist, p2) else (p1, dist))
+                    | Some (Point (wt, firstWireSteps, secondWireSteps)) when wt <> wireType -> 
+                        let steps' = (if wireType = FirstWire then (currentSteps, secondWireSteps) else (firstWireSteps, currentSteps))
                         acc |> Map.remove (x, y) |> Map.add (x, y) (IntersectionPoint steps')
                     | None -> 
-                        let p1, p2 = if wireType = FirstWire then (dist, 0) else (0, dist)
-                        acc |> Map.add (x, y) (Point(wireType,p1,p2))
+                        let firstWireSteps, secondWireSteps = if wireType = FirstWire then (currentSteps, 0) else (0, currentSteps)
+                        acc |> Map.add (x, y) (Point(wireType,firstWireSteps,secondWireSteps))
                     | _ ->
                         acc) map newPositions
 
-            let x, y, distance = List.last newPositions
+            let x, y, currentSteps = List.last newPositions
             let nextPosition = x, y
             match Map.tryFind nextPosition map' with
-            | Some (Point (wt, p1, p2)) when wt <> wireType -> 
-                let steps' = if wireType = FirstWire then (distance, p2) else (p1, distance)
-                buildGrid (map' |> Map.remove nextPosition |> Map.add nextPosition (IntersectionPoint steps')) nextPosition (steps+distance) wireType xs
+            | Some (Point (wt, firstWireSteps, secondWireSteps)) when wt <> wireType -> 
+                let steps' = if wireType = FirstWire then (currentSteps, secondWireSteps) else (firstWireSteps, currentSteps)
+                buildGrid (map' |> Map.remove nextPosition |> Map.add nextPosition (IntersectionPoint steps')) nextPosition currentSteps wireType xs
             | _ -> 
-                let x, y = if wireType = FirstWire then (distance, 0) else (0, distance)
-                buildGrid (map' |> Map.add nextPosition (Point(wireType, x, y))) nextPosition distance wireType xs
+                let x, y = if wireType = FirstWire then (currentSteps, 0) else (0, currentSteps)
+                buildGrid (map' |> Map.add nextPosition (Point(wireType, x, y))) nextPosition currentSteps wireType xs
 
     let part1() = 
         buildGrid Map.empty (0, 0) 0 FirstWire (paths.[0])
