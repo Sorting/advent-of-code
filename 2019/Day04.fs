@@ -3,8 +3,7 @@ namespace Year2019
 module Day04 =
     open Utilities
     
-    let parseRange (range: string) =
-        range.Split('-') |> function [|a; b|]-> int a, int b | _ -> failwith "Something went wrong"
+    let parseRange (range: string) = range.Split('-') |> function [|a; b|]-> int a, int b | _ -> failwith "Something went wrong"
 
     let range = getSingle 2019 4 parseRange
 
