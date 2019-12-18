@@ -15,17 +15,13 @@ module Day04 =
         | current::xs when current >= prev -> increases current xs
         | _ -> false 
 
-    let hasPair = 
-        function
-        | [] -> false 
-        | digits -> digits |> List.pairwise |> List.exists (fun (a, b) -> a = b)
+    let hasPair = function [] -> false | digits -> List.pairwise digits |> List.exists (fun (a, b) -> a = b)
 
     let hasNonGroupedPair = 
         function
         | [] -> false 
         | digits -> 
-            digits 
-            |> List.pairwise
+            List.pairwise digits
             |> List.filter (fun (a, b) -> a = b)
             |> List.countBy (id)
             |> List.exists (fun (_, count) -> count = 1)
