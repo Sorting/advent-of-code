@@ -30,19 +30,18 @@ module Day04 =
             |> List.filter (fun (a, b) -> a = b)
             |> List.countBy (id)
             |> List.exists (fun (_, count) -> count = 1)
-            
+
+    let toIntList x = (string x).ToCharArray() |> Array.map int |> Array.toList            
 
     let part1() =
-        let start, end' = range
-        [start..end']
-        |> List.map (fun x -> (string x).ToCharArray() |> Array.map (int) |> Array.toList)
+        [fst range..snd range]
+        |> List.map toIntList
         |> List.filter (increases 0 <&&> hasPair)
         |> List.length
     
     let part2() =
-        let start, end' = range
-        [start..end']
-        |> List.map (fun x -> (string x).ToCharArray() |> Array.map (int) |> Array.toList)
+        [fst range..snd range]
+        |> List.map toIntList
         |> List.filter (increases 0 <&&> hasNonGroupedPair)
         |> List.length
 
