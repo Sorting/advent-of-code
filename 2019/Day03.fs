@@ -42,12 +42,12 @@ module Day03 =
                         let firstWireSteps, secondWireSteps = if wireType = FirstWire then (currentSteps, 0) else (0, currentSteps)
                         acc |> Map.add (x, y) (Point(wireType,firstWireSteps,secondWireSteps))
                     | _ ->
-                        acc) map newPositions
+                        acc) map (newPositions |> List.take (newPositions.Length-1))
 
             let x, y, currentSteps = List.last newPositions
             let nextPosition = x, y
             match Map.tryFind nextPosition map' with
-            | Some (Point (wt, firstWireSteps, secondWireSteps)) when wt <> wireType -> 
+            | Some (Point (wt, firstWireSteps, secondWireSteps)) -> 
                 let steps' = if wireType = FirstWire then (currentSteps, secondWireSteps) else (firstWireSteps, currentSteps)
                 buildGrid (map' |> Map.remove nextPosition |> Map.add nextPosition (IntersectionPoint steps')) nextPosition currentSteps wireType xs
             | _ -> 

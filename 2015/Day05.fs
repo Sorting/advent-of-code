@@ -3,8 +3,6 @@ namespace Year2015
 module Day05 =
     open Utilities
 
-    let (<&&>) f g s = f s && g s
-
     let strings = getMany 2015 5 (string)
 
     let containsVowels (s: string) =

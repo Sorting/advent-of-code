@@ -1,0 +1,49 @@
+namespace Year2019
+
+module Day04 =
+    open Utilities
+    
+    let parseRange (range: string) =
+        range.Split('-')
+        |> Array.toList
+        |> function [a; b]-> int a, int b | _ -> failwith "Something went wrong"
+
+    let range = getSingle 2019 4 parseRange
+
+    let rec increases prev =
+        function 
+        | [] -> true
+        | current::xs when current >= prev -> increases current xs
+        | _ -> false 
+
+    let hasPair = 
+        function
+        | [] -> false 
+        | digits -> digits |> List.pairwise |> List.exists (fun (a, b) -> a = b)
+
+    let hasNonGroupedPairs = 
+        function
+        | [] -> false 
+        | digits -> 
+            digits 
+            |> List.pairwise
+            |> List.filter (fun (a, b) -> a = b)
+            |> List.countBy (id)
+            |> List.exists (fun (_, count) -> count = 1)
+            
+
+    let part1() =
+        let start, end' = range
+        [start..end']
+        |> List.map (fun x -> (string x).ToCharArray() |> Array.map (int) |> Array.toList)
+        |> List.filter (increases 0 <&&> hasPair)
+        |> List.length
+    
+    let part2() =
+        let start, end' = range
+        [start..end']
+        |> List.map (fun x -> (string x).ToCharArray() |> Array.map (int) |> Array.toList)
+        |> List.filter (increases 0 <&&> hasNonGroupedPairs)
+        |> List.length
+
+    let solve() = printDay 2019 4 part1 part2
