@@ -31,17 +31,17 @@ module Day04 =
             |> List.countBy (id)
             |> List.exists (fun (_, count) -> count = 1)
 
-    let toIntList x = (string x).ToCharArray() |> Array.map int |> Array.toList            
+    let toSingleDigitList x = (string x).ToCharArray() |> Array.map int |> Array.toList            
 
     let part1() =
         [fst range..snd range]
-        |> List.map toIntList
+        |> List.map toSingleDigitList
         |> List.filter (increases 0 <&&> hasPair)
         |> List.length
     
     let part2() =
         [fst range..snd range]
-        |> List.map toIntList
+        |> List.map toSingleDigitList
         |> List.filter (increases 0 <&&> hasNonGroupedPair)
         |> List.length
 
