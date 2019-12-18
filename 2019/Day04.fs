@@ -5,8 +5,7 @@ module Day04 =
     
     let parseRange (range: string) =
         range.Split('-')
-        |> Array.toList
-        |> function [a; b]-> int a, int b | _ -> failwith "Something went wrong"
+        |> function [|a; b|]-> int a, int b | _ -> failwith "Something went wrong"
 
     let range = getSingle 2019 4 parseRange
 
