@@ -21,7 +21,7 @@ module Day04 =
         | [] -> false 
         | digits -> digits |> List.pairwise |> List.exists (fun (a, b) -> a = b)
 
-    let hasNonGroupedPairs = 
+    let hasNonGroupedPair = 
         function
         | [] -> false 
         | digits -> 
@@ -43,7 +43,7 @@ module Day04 =
         let start, end' = range
         [start..end']
         |> List.map (fun x -> (string x).ToCharArray() |> Array.map (int) |> Array.toList)
-        |> List.filter (increases 0 <&&> hasNonGroupedPairs)
+        |> List.filter (increases 0 <&&> hasNonGroupedPair)
         |> List.length
 
     let solve() = printDay 2019 4 part1 part2
