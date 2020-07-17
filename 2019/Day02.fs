@@ -1,30 +1,30 @@
 namespace Year2019
-open System
+open Common
 
 module Day02 =
-    open Utilities
-
-    type Operation =
-        | Add of int * int * int
-        | Multiply of int * int * int
-        | Halt
-        | UnknownOpCode
+    open Utilities    
 
     let parser (input: string) = input.Split(',') |> Array.map int
     let getMemory() = getSingle 2019 2 parser
-    
+
+    type Operation =
+            | Add of int * int * int
+            | Multiply of int * int * int            
+            | Halt
+            | UnknownOpCode   
+
     let instructions memory =
         let rec loop operations = function
         | opCode::x::y::z::xs ->
             let operation =
                 match opCode with
                 | 1  -> Add (x, y, z)
-                | 2  -> Multiply (x, y, z)
+                | 2  -> Multiply (x, y, z)                
                 | 99 -> Halt
                 | _  -> UnknownOpCode
             loop (operations @ [operation]) xs                
         | _ -> operations
-        loop [] (memory |> List.ofArray)
+        loop [] (memory |> List.ofArray)    
 
     let rec executeInstructions (memory: int array) = 
        function
@@ -35,11 +35,11 @@ module Day02 =
                 executeInstructions memory xs
             | Multiply (firstAddress, secondAddress, resultAddress) ->
                 memory.[resultAddress] <- memory.[firstAddress] * memory.[secondAddress]
-                executeInstructions memory xs
+                executeInstructions memory xs           
             | Halt -> memory
             | UnknownOpCode -> failwith "Something went wrong"
-        | _ -> memory
-
+        | _ -> memory     
+    
     let part1() =        
         let memory = getMemory()
         memory.[1] <- 12
