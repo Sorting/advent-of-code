@@ -1,5 +1,4 @@
 namespace Year2019
-open Common
 
 module Day02 =
     open Utilities    

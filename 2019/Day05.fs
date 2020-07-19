@@ -1,8 +1,7 @@
 namespace Year2019
 
 module Day05 =
-    open Utilities
-    open System    
+    open Utilities    
 
     let parser (input: string) = input.Split(',')
     let getMemory() = getSingle 2019 5 parser
@@ -13,87 +12,121 @@ module Day05 =
 
     let parameterToInt = function Position x -> x | Immediate x -> x 
 
-    type Operation =
-            | Add of Parameter list
-            | Multiply of Parameter list
-            | Input of int
-            | Output of int
-            | Halt
-            | UnknownOpCode
+    type Instruction =
+        | Add of Parameter * Parameter * Parameter 
+        | Multiply of Parameter * Parameter * Parameter
+        | Input of int
+        | Output of int
+        | JumpIfTrue of Parameter * Parameter
+        | JumpIfFalse of Parameter * Parameter
+        | LessThan of Parameter * Parameter * Parameter
+        | Equals of Parameter * Parameter * Parameter
+        | Halt
+        | UnknownOpCode
 
-    let getParameter (parameterModes: string list) idx (value: string) =
+    let getParameter (parameterModes: string list) idx (value: int) =
         if parameterModes.Length - 1 < idx 
         then Position (int value)
         else
             if int parameterModes.[idx] = 1 
             then Immediate (int value)
-            else Position (int value)
-        
+            else Position (int value)        
+    
+    let getValue (memory: int array) = function Position x -> memory.[x] | Immediate x -> x    
 
-    let instructions memory =
-        let rec loop operations = function
-            | x::xs ->
-                match x with
-                | Regex @"^([0-1]{1,10})(01|02|03|04|99)$" [parameterModes; opCode] ->                                        
-                    let parameterModes' = parameterModes.ToCharArray() |> Array.rev |> Array.map string |> Array.toList
-                    let operation, argsCount =
-                        match int opCode with
-                        | 1  -> Add ([ for i in 0 .. 2 -> getParameter parameterModes' i xs.[i] ]), 3
-                        | 2  -> Multiply ([ for i in 0 .. 2 -> getParameter parameterModes' i xs.[i] ]), 3
-                        | 3  -> Input (int xs.[0]), 1
-                        | 4  -> Output (int xs.[0]), 1
-                        | 99 -> Halt, 0
-                        | _  -> UnknownOpCode, 0
-                    loop (operations @ [operation]) (xs |> List.skip argsCount)
-                | Regex @"^(1|2|3|4|99)$" [opCode] ->                    
-                    let operation, argsCount = 
-                        match int opCode with
-                        | 1  -> Add [ Position (int xs.[0]); Position (int xs.[1]); Position (int xs.[2]) ], 3
-                        | 2  -> Multiply [ Position (int xs.[0]); Position (int xs.[1]); Position (int xs.[2]) ], 3
-                        | 3  -> Input (int xs.[0]), 1
-                        | 4  -> Output (int xs.[0]), 1
-                        | 99 -> Halt, 0
-                        | _  -> UnknownOpCode, 0
-                    loop (operations @ [operation]) (xs |> List.skip argsCount)        
-                | _ -> loop operations xs
-            | _ -> operations
-        loop [] (memory |> List.ofArray)
-
-    let getValue (memory: int array) = function Position x -> memory.[x] | Immediate x -> x
-
-    let rec executeInstructions (memory: int array) (output: int list) (input: int) = 
-       function
-       | x::xs ->
-            match x with
-            | Add (parameters) ->
-                let resultAddress = List.last parameters                
-                let parameters' = parameters |> List.take ((List.length parameters) - 1)
-                memory.[parameterToInt resultAddress] <- parameters' |> List.sumBy (getValue memory)
-                executeInstructions memory output input xs
-            | Multiply (parameters) ->
-                let resultAddress = List.last parameters                
-                let parameters' = parameters |> List.take ((List.length parameters) - 1)
-                memory.[parameterToInt resultAddress] <- parameters' |> List.fold (fun acc x -> acc * (getValue memory x)) 1
-                executeInstructions memory output input xs
-            | Input value ->
-                let input' = int (Console.ReadLine())
-                memory.[value] <- input'              
-                executeInstructions memory output input' xs
+    let executeInstruction (memory: int array) (output: int list) (input: int) instructionPointer =
+        function  
+            | Add (p1, p2, storeAddress) ->                
+                memory.[parameterToInt storeAddress] <- getValue memory p1 + getValue memory p2
+                output, input, instructionPointer + 4
+            | Multiply (p1, p2, storeAddress) ->                
+                memory.[parameterToInt storeAddress] <- getValue memory p1 * getValue memory p2
+                output, input, instructionPointer + 4
+            | Input address ->
+                memory.[address] <- input
+                output, input, instructionPointer + 2
             | Output address -> 
                 printfn "%d" memory.[address]
-                executeInstructions memory (output @ [memory.[address]]) input xs
-            | Halt -> memory, output
-            | UnknownOpCode -> failwith "Something went wrong"
-        | _ -> memory, output
+                output @ [int memory.[address]], input, instructionPointer + 2
+            | JumpIfTrue (p1, p2) -> 
+                output, input, 
+                    if getValue memory p1 <> 0 
+                    then getValue memory p2 
+                    else instructionPointer + 3
+            | JumpIfFalse (p1, p2) ->
+                output, input, 
+                    if getValue memory p1 = 0 
+                    then getValue memory p2 
+                    else instructionPointer + 3
+            | LessThan (p1, p2, storeAddress) ->
+                memory.[parameterToInt storeAddress] <- 
+                    if getValue memory p1 < getValue memory p2 
+                    then 1 
+                    else 0
+                output, input, instructionPointer + 4
+            | Equals (p1, p2, storeAddress) ->
+                memory.[parameterToInt storeAddress] <- 
+                    if getValue memory p1 = getValue memory p2 
+                    then 1 
+                    else 0
+                output, input, instructionPointer + 4
+            | Halt -> output, input, instructionPointer + 1
+            | UnknownOpCode -> failwith "Something went wrong"        
+
+    let executeInstructions (memory: int array) input =
+        let rec loop instructionPointer output input =
+            if instructionPointer >= memory.Length 
+            then memory, output
+            else
+                let opCode, parameterModes =
+                    match string memory.[instructionPointer] with
+                    | Regex @"^([0-1]{1,10})(01|02|03|04|05|06|07|08|99)$" [parameterModes; opCode] ->                                        
+                        int opCode, parameterModes.ToCharArray() |> Array.rev |> Array.map string |> Array.toList                                                
+                    | Regex @"^(1|2|3|4|5|6|7|8|99)$" [opCode] ->
+                        int opCode, []                                          
+                    | _ -> 999, []
+                
+                let instruction =
+                    match int opCode with
+                    | 1  -> Add         ( getParameter parameterModes 0 memory.[instructionPointer + 1], 
+                                          getParameter parameterModes 1 memory.[instructionPointer + 2], 
+                                          getParameter parameterModes 2 memory.[instructionPointer + 3] )
+                    | 2  -> Multiply    ( getParameter parameterModes 0 memory.[instructionPointer + 1], 
+                                          getParameter parameterModes 1 memory.[instructionPointer + 2], 
+                                          getParameter parameterModes 2 memory.[instructionPointer + 3] )
+                    | 3  -> Input       ( int memory.[instructionPointer + 1] )
+                    | 4  -> Output      ( int memory.[instructionPointer + 1] )
+                    | 5  -> JumpIfTrue  ( getParameter parameterModes 0 memory.[instructionPointer + 1], 
+                                          getParameter parameterModes 1 memory.[instructionPointer + 2] )
+                    | 6  -> JumpIfFalse ( getParameter parameterModes 0 memory.[instructionPointer + 1], 
+                                          getParameter parameterModes 1 memory.[instructionPointer + 2] )                                    
+                    | 7  -> LessThan    ( getParameter parameterModes 0 memory.[instructionPointer + 1], 
+                                          getParameter parameterModes 1 memory.[instructionPointer + 2], 
+                                          getParameter parameterModes 2 memory.[instructionPointer + 3] )                                    
+                    | 8  -> Equals      ( getParameter parameterModes 0 memory.[instructionPointer + 1], 
+                                          getParameter parameterModes 1 memory.[instructionPointer + 2], 
+                                          getParameter parameterModes 2 memory.[instructionPointer + 3] )                                    
+                    | 99 -> Halt
+                    | _  -> UnknownOpCode
+                    
+                match instruction with
+                | Halt -> memory, output
+                | UnknownOpCode -> loop (instructionPointer + 1) output input
+                | _ ->                     
+                    let output', input', instructionPointer' = executeInstruction memory output input instructionPointer instruction
+                    loop instructionPointer' output' input'
+                
+        loop 0 [] input
     
     let part1() =        
-        let memory = getMemory()        
-        let mems, outs = (executeInstructions (memory |> Array.map int) [] 0 (instructions memory))
-        outs |> List.tryLast |> function Some x -> x | None -> 666
+        let memory = getMemory() |> Array.map int        
+        let _, output = executeInstructions memory 1
+        output |> List.tryLast |> function Some x -> x | None -> -1
 
     let part2() = 
-        0
+        let memory = getMemory() |> Array.map int
+        let _, outs = executeInstructions memory 5
+        outs |> List.tryLast |> function Some x -> x | None -> -1
 
     let solve() = printDay 2019 5 part1 part2
     
-
