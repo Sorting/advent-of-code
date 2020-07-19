@@ -34,44 +34,43 @@ module Day05 =
     
     let getValue (memory: int[]) = function Position x -> memory.[x] | Immediate x -> x    
 
-    let executeInstruction (memory: int[]) output input instructionPointer =
-        function  
-            | Add (p1, p2, storeAddress) ->                
-                memory.[parameterToInt storeAddress] <- getValue memory p1 + getValue memory p2
-                output, input, instructionPointer + 4
-            | Multiply (p1, p2, storeAddress) ->                
-                memory.[parameterToInt storeAddress] <- getValue memory p1 * getValue memory p2
-                output, input, instructionPointer + 4
-            | Input address ->
-                memory.[address] <- input
-                output, input, instructionPointer + 2
-            | Output address -> 
-                printfn "%d" memory.[address]
-                output @ [int memory.[address]], input, instructionPointer + 2
-            | JumpIfTrue (p1, p2) -> 
-                output, input, 
-                    if getValue memory p1 <> 0 
-                    then getValue memory p2 
-                    else instructionPointer + 3
-            | JumpIfFalse (p1, p2) ->
-                output, input, 
-                    if getValue memory p1 = 0 
-                    then getValue memory p2 
-                    else instructionPointer + 3
-            | LessThan (p1, p2, storeAddress) ->
-                memory.[parameterToInt storeAddress] <- 
-                    if getValue memory p1 < getValue memory p2 
-                    then 1 
-                    else 0
-                output, input, instructionPointer + 4
-            | Equals (p1, p2, storeAddress) ->
-                memory.[parameterToInt storeAddress] <- 
-                    if getValue memory p1 = getValue memory p2 
-                    then 1 
-                    else 0
-                output, input, instructionPointer + 4
-            | Halt -> output, input, instructionPointer + 1
-            | UnknownOpCode -> failwith "Something went wrong"        
+    let executeInstruction (memory: int[]) output input instructionPointer = function  
+        | Add (p1, p2, storeAddress) ->                
+            memory.[parameterToInt storeAddress] <- getValue memory p1 + getValue memory p2
+            output, input, instructionPointer + 4
+        | Multiply (p1, p2, storeAddress) ->                
+            memory.[parameterToInt storeAddress] <- getValue memory p1 * getValue memory p2
+            output, input, instructionPointer + 4
+        | Input address ->
+            memory.[address] <- input
+            output, input, instructionPointer + 2
+        | Output address -> 
+            printfn "%d" memory.[address]
+            output @ [int memory.[address]], input, instructionPointer + 2
+        | JumpIfTrue (p1, p2) -> 
+            output, input, 
+                if getValue memory p1 <> 0 
+                then getValue memory p2 
+                else instructionPointer + 3
+        | JumpIfFalse (p1, p2) ->
+            output, input, 
+                if getValue memory p1 = 0 
+                then getValue memory p2 
+                else instructionPointer + 3
+        | LessThan (p1, p2, storeAddress) ->
+            memory.[parameterToInt storeAddress] <- 
+                if getValue memory p1 < getValue memory p2 
+                then 1 
+                else 0
+            output, input, instructionPointer + 4
+        | Equals (p1, p2, storeAddress) ->
+            memory.[parameterToInt storeAddress] <- 
+                if getValue memory p1 = getValue memory p2 
+                then 1 
+                else 0
+            output, input, instructionPointer + 4
+        | Halt -> output, input, instructionPointer + 1
+        | UnknownOpCode -> failwith "Something went wrong"
 
     let executeInstructions (memory: int[]) input =
         let rec loop instructionPointer output input =
@@ -114,8 +113,7 @@ module Day05 =
                 | UnknownOpCode -> loop (instructionPointer + 1) output input
                 | _ ->                     
                     let output', input', instructionPointer' = executeInstruction memory output input instructionPointer instruction
-                    loop instructionPointer' output' input'
-                
+                    loop instructionPointer' output' input'                
         loop 0 [] input
     
     let part1() =        
