@@ -24,17 +24,17 @@ module Day05 =
         | Halt
         | UnknownOpCode
 
-    let getParameter (parameterModes: string list) idx (value: int) =
+    let getParameter (parameterModes: string list) idx value =
         if parameterModes.Length - 1 < idx 
         then Position (int value)
         else
             if int parameterModes.[idx] = 1 
-            then Immediate (int value)
-            else Position (int value)        
+            then Immediate value
+            else Position value
     
     let getValue (memory: int array) = function Position x -> memory.[x] | Immediate x -> x    
 
-    let executeInstruction (memory: int array) (output: int list) (input: int) instructionPointer =
+    let executeInstruction (memory: int array) output input instructionPointer =
         function  
             | Add (p1, p2, storeAddress) ->                
                 memory.[parameterToInt storeAddress] <- getValue memory p1 + getValue memory p2
