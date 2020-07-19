@@ -24,7 +24,7 @@ module Day05 =
         | Halt
         | UnknownOpCode
 
-    let getParameter (parameterModes: string list) idx value =
+    let getParameter (parameterModes: string[]) idx value =
         if parameterModes.Length - 1 < idx 
         then Position (int value)
         else
@@ -32,9 +32,9 @@ module Day05 =
             then Immediate value
             else Position value
     
-    let getValue (memory: int array) = function Position x -> memory.[x] | Immediate x -> x    
+    let getValue (memory: int[]) = function Position x -> memory.[x] | Immediate x -> x    
 
-    let executeInstruction (memory: int array) output input instructionPointer =
+    let executeInstruction (memory: int[]) output input instructionPointer =
         function  
             | Add (p1, p2, storeAddress) ->                
                 memory.[parameterToInt storeAddress] <- getValue memory p1 + getValue memory p2
@@ -73,7 +73,7 @@ module Day05 =
             | Halt -> output, input, instructionPointer + 1
             | UnknownOpCode -> failwith "Something went wrong"        
 
-    let executeInstructions (memory: int array) input =
+    let executeInstructions (memory: int[]) input =
         let rec loop instructionPointer output input =
             if instructionPointer >= memory.Length 
             then memory, output
@@ -81,10 +81,10 @@ module Day05 =
                 let opCode, parameterModes =
                     match string memory.[instructionPointer] with
                     | Regex @"^([0-1]{1,10})(01|02|03|04|05|06|07|08|99)$" [parameterModes; opCode] ->                                        
-                        int opCode, parameterModes.ToCharArray() |> Array.rev |> Array.map string |> Array.toList                                                
+                        int opCode, parameterModes.ToCharArray() |> Array.rev |> Array.map string
                     | Regex @"^(1|2|3|4|5|6|7|8|99)$" [opCode] ->
-                        int opCode, []                                          
-                    | _ -> 999, []
+                        int opCode, Array.empty
+                    | _ -> 999, Array.empty
                 
                 let instruction =
                     match int opCode with
