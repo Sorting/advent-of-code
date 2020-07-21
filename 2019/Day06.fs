@@ -79,7 +79,7 @@ module Day06 =
 
     let countDirectAndIndirect = function
     | Empty -> 0
-    | root -> 
+    | Node(_, root, _) -> 
         let rec count n = function
             | Empty -> n
             | Node(_, left, right) ->
@@ -89,8 +89,7 @@ module Day06 =
     let part1() =
         getMany 2019 6 parser
         |> Seq.toList
-        |> buildTree
-        |> fun (Node(_, tree, _)) -> tree
+        |> buildTree        
         |> countDirectAndIndirect
 
     let part2() = 0
