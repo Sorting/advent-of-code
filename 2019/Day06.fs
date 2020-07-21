@@ -3,7 +3,6 @@ namespace Year2019
 module Day06 =    
     open Utilities
 
-    // type PlanetPair = PlanetPair of string * string
     type BinaryTree = 
         | Node of value: string * left: BinaryTree * right: BinaryTree
         | Empty
@@ -15,20 +14,6 @@ module Day06 =
             if x = value 
             then true
             else nodeExists value left || nodeExists value right
-    
-    let rec findNode value = function
-        | Empty -> None
-        | Node(x, Empty, Empty) -> 
-            if x = value
-            then Some (Node(x, Empty, Empty))        
-            else None
-        | Node(x, left, right ) ->
-            if x = value
-            then Some (Node(x, left, right))
-            else 
-                match findNode value left with
-                | Some node -> Some node
-                | None -> findNode value right
     
     let rec addNode parent value = function
         | Empty -> Node(value, Empty, Empty)
@@ -56,7 +41,7 @@ module Day06 =
     let findRoot = function
         | [] -> failwith "Cannot find a root with no data"
         | list ->
-            let m, s = List.fold (fun (m', s') (a, b) -> (m' |> Map.add a (a, b)), (s' |> Set.add b)) (Map.ofList [], set []) list
+            let m, s = List.fold (fun (m', s') (a, b) -> m' |> Map.add a (a, b), s' |> Set.add b) (Map.ofList [], set []) list
             Map.filter (fun a _ -> not (Set.contains a s)) m 
             |> Map.toSeq 
             |> Seq.head
@@ -66,15 +51,11 @@ module Day06 =
     let buildTree pairs =
         let rec aux tree = function
             | [] -> tree
-            | [(a, b)] -> 
-                printfn "%s was added to %s" b a 
-                addNode a b tree
+            | [(a, b)] -> addNode a b tree
             | (a, b)::xs -> 
                 if not (nodeExists a tree)                
                 then aux tree (xs @ [(a, b)])
-                else 
-                    printfn "%s was added to %s" b a
-                    aux (tree |> addNode a b) xs
+                else aux (tree |> addNode a b) xs
         aux (findRoot pairs) pairs
 
     let countDirectAndIndirect = function
