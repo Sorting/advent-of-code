@@ -15,6 +15,16 @@ module Day06 =
             then true
             else nodeExists value left || nodeExists value right
     
+    let rec findNode node = function
+        | Empty -> None
+        | Node(x, left, right) ->
+            if x = node 
+            then Some (Node(x, left, right))
+            else 
+                match findNode node left with
+                | Some x -> Some x
+                | None -> findNode node right
+    
     let rec addNode parent value = function
         | Empty -> Node(value, Empty, Empty)
         | Node(x, Empty, Empty) ->
@@ -48,6 +58,22 @@ module Day06 =
             |> snd
             |> fun (a, b) -> Node(a, Node(b, Empty, Empty), Empty)
 
+
+    let findPath leaf = function
+        | Empty -> None
+        | root ->
+            let rec aux depth path = function
+                | Empty -> None
+                | Node(v, left, right) ->
+                    if v = leaf
+                    then Some (path, depth)
+                    else 
+                        match aux (depth + 1) (path @ [v]) left with
+                        | Some v -> Some v
+                        | None -> aux (depth + 1) (path @ [v]) right
+            aux 0 [] root
+            
+        
     let buildTree pairs =
         let rec aux tree = function
             | [] -> tree
@@ -57,6 +83,25 @@ module Day06 =
                 then aux tree (xs @ [(a, b)])
                 else aux (tree |> addNode a b) xs
         aux (findRoot pairs) pairs
+
+    let findCommonRoot leaf1 leaf2 root =        
+        let rec aux last = function
+            | [], [] -> Some last
+            | [_], [_] -> Some last
+            | x1::xs1, x2::xs2 -> if x1 <> x2 then Some last else aux x1 (xs1, xs2)
+            | _ -> None
+
+        let leaf1Path = match findPath leaf1 root with Some (path, _) -> path | None -> []
+        let leaf2Path = match findPath leaf2 root with Some (path, _) -> path | None -> []
+
+        findNode (match (aux "" (leaf1Path, leaf2Path)) with Some x -> x  | None -> "") root
+
+    let countSteps leaf1 leaf2 = function
+        | Empty -> 0
+        | root ->
+            let leaf1Steps = match findPath leaf1 root with Some (_, steps) -> steps | None -> 1
+            let leaf2Steps = match findPath leaf2 root with Some (_, steps) -> steps | None -> 1
+            (leaf1Steps - 1) + (leaf2Steps - 1)
 
     let countDirectAndIndirect = function
     | Empty -> 0
@@ -73,6 +118,12 @@ module Day06 =
         |> buildTree        
         |> countDirectAndIndirect
 
-    let part2() = 0
+    let part2() =
+        getMany 2019 6 parser
+        |> Seq.toList
+        |> buildTree        
+        |> findCommonRoot "YOU" "SAN"
+        |> function Some x -> countSteps "YOU" "SAN" x| None -> failwith "Nothing to see here"
+        
 
     let solve() = printDay 2019 6 part1 part2
