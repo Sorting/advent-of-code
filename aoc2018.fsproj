@@ -6,7 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Utilities.fs" />    
+    <Compile Include="Utilities.fs" />
+    <Compile Include="BinaryTree.fs" />
     <Compile Include="2015/Day01.fs" />
     <Compile Include="2015/Day02.fs" />
     <Compile Include="2015/Day03.fs" />
