@@ -1,6 +1,7 @@
 namespace Year2019
 
 module Day06 =    
+    open System
     open Utilities
 
     type BinaryTree = 
@@ -58,7 +59,6 @@ module Day06 =
             |> snd
             |> fun (a, b) -> Node(a, Node(b, Empty, Empty), Empty)
 
-
     let findPath leaf = function
         | Empty -> None
         | root ->
@@ -71,8 +71,7 @@ module Day06 =
                         match aux (depth + 1) (path @ [v]) left with
                         | Some v -> Some v
                         | None -> aux (depth + 1) (path @ [v]) right
-            aux 0 [] root
-            
+            aux 0 [] root            
         
     let buildTree pairs =
         let rec aux tree = function
@@ -115,15 +114,14 @@ module Day06 =
     let part1() =
         getMany 2019 6 parser
         |> Seq.toList
-        |> buildTree        
+        |> buildTree
         |> countDirectAndIndirect
 
     let part2() =
         getMany 2019 6 parser
         |> Seq.toList
-        |> buildTree        
+        |> buildTree
         |> findCommonRoot "YOU" "SAN"
-        |> function Some x -> countSteps "YOU" "SAN" x| None -> failwith "Nothing to see here"
-        
+        |> function Some x -> countSteps "YOU" "SAN" x| None -> failwith "Nothing to see here"        
 
     let solve() = printDay 2019 6 part1 part2
