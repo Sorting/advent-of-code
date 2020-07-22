@@ -39,6 +39,6 @@ module Day06 =
         |> Seq.toList
         |> buildTree
         |> BinaryTree.findCommonRoot "YOU" "SAN"
-        |> function Some x -> BinaryTree.countSteps "YOU" "SAN" x| None -> failwith "Nothing to see here"        
+        |> function Some x -> BinaryTree.countSteps "YOU" "SAN" x | None -> failwith "Nothing to see here"        
 
     let solve() = printDay 2019 6 part1 part2
