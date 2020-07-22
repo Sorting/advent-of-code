@@ -1,7 +1,6 @@
 namespace Year2019
 
-module Day06 =    
-    open System
+module Day06 =        
     open Utilities    
 
     let parser (s: string) =
