@@ -1,8 +1,8 @@
 module BinaryTree
 
 type BinaryTree<'a> = 
-        | Node of value: 'a * left: BinaryTree<'a> * right: BinaryTree<'a>
-        | Empty
+    | Node of value: 'a * left: BinaryTree<'a> * right: BinaryTree<'a>
+    | Empty
 
 let rec exists value = function
     | Empty -> false
@@ -21,7 +21,6 @@ let rec findNode value = function
             match findNode value left with
             | Some x -> Some x
             | None -> findNode value right
-
 
 let findPath leaf = function
     | Empty -> None
@@ -76,11 +75,11 @@ let countSteps leaf1 leaf2 = function
         (leaf1Steps - 1) + (leaf2Steps - 1)
 
 let countDirectAndIndirect = function
-| Empty -> 0
-| Node(_, root, _) -> 
-    let rec count n = function
-        | Empty -> n
-        | Node(_, left, right) ->
-            n + (count (n + 1) left) + (count (n + 1) right)
-    (count 0 root) / 2
+    | Empty -> 0
+    | Node(_, root, _) -> 
+        let rec count n = function
+            | Empty -> n
+            | Node(_, left, right) ->
+                n + (count (n + 1) left) + (count (n + 1) right)
+        (count 0 root) / 2
     
