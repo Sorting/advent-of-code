@@ -2,11 +2,10 @@ namespace Year2019
 
 module IntCodeComputer =     
     open Utilities
+    
     type Parameter =
         | Position of int
-        | Immediate of int       
-
-    let parameterToInt = function Position x -> x | Immediate x -> x 
+        | Immediate of int
 
     type Instruction =
         | Add of Parameter * Parameter * Parameter 
@@ -20,6 +19,8 @@ module IntCodeComputer =
         | Halt
         | UnknownOpCode
 
+    let parameterToInt = function Position x -> x | Immediate x -> x     
+
     let getParameter (parameterModes: string[]) idx value =
         if parameterModes.Length - 1 < idx 
         then Position (int value)
@@ -30,26 +31,30 @@ module IntCodeComputer =
 
     let getValue (memory: int[]) = function Position x -> memory.[x] | Immediate x -> x    
 
-    let executeInstruction (memory: int[]) output input instructionPointer = function  
+    let executeInstruction (memory: int[]) output inputs instructionPointer = function  
         | Add (p1, p2, storeAddress) ->                
             memory.[parameterToInt storeAddress] <- getValue memory p1 + getValue memory p2
-            output, input, instructionPointer + 4
+            output, inputs, instructionPointer + 4
         | Multiply (p1, p2, storeAddress) ->                
             memory.[parameterToInt storeAddress] <- getValue memory p1 * getValue memory p2
-            output, input, instructionPointer + 4
+            output, inputs, instructionPointer + 4
         | Input address ->
-            memory.[address] <- input
-            output, input, instructionPointer + 2
+            let x, xs = 
+                match inputs with
+                | [] -> failwith "No input to execute"
+                | x'::xs' -> x', xs'
+            memory.[address] <- x
+            output, xs, instructionPointer + 2
         | Output address -> 
-            printfn "%d" memory.[address]
-            output @ [int memory.[address]], input, instructionPointer + 2
+            // printfn "%d" memory.[address]
+            output @ [int memory.[address]], inputs, instructionPointer + 2
         | JumpIfTrue (p1, p2) -> 
-            output, input, 
+            output, inputs, 
                 if getValue memory p1 <> 0 
                 then getValue memory p2 
                 else instructionPointer + 3
         | JumpIfFalse (p1, p2) ->
-            output, input, 
+            output, inputs, 
                 if getValue memory p1 = 0 
                 then getValue memory p2 
                 else instructionPointer + 3
@@ -58,20 +63,20 @@ module IntCodeComputer =
                 if getValue memory p1 < getValue memory p2 
                 then 1 
                 else 0
-            output, input, instructionPointer + 4
+            output, inputs, instructionPointer + 4
         | Equals (p1, p2, storeAddress) ->
             memory.[parameterToInt storeAddress] <- 
                 if getValue memory p1 = getValue memory p2 
                 then 1 
                 else 0
-            output, input, instructionPointer + 4
-        | Halt -> output, input, instructionPointer + 1
+            output, inputs, instructionPointer + 4
+        | Halt -> output, inputs, instructionPointer + 1
         | UnknownOpCode -> failwith "Something went wrong"
 
-    let executeInstructions (memory: int[]) input =
-        let rec loop instructionPointer output input =
-            if instructionPointer >= memory.Length 
-            then memory, output
+    let executeInstructions (memory: int[]) inputs =
+        let rec loop instructionPointer outputs inputs =
+            if instructionPointer >= memory.Length
+            then memory, outputs
             else
                 let opCode, parameterModes =
                     match string memory.[instructionPointer] with
@@ -105,9 +110,9 @@ module IntCodeComputer =
                     | _  -> UnknownOpCode
                     
                 match instruction with
-                | Halt -> memory, output
-                | UnknownOpCode -> loop (instructionPointer + 1) output input
+                | Halt -> memory, outputs
+                | UnknownOpCode -> loop (instructionPointer + 1) outputs inputs
                 | _ ->                     
-                    let output', input', instructionPointer' = executeInstruction memory output input instructionPointer instruction
-                    loop instructionPointer' output' input'                
-        loop 0 [] input
+                    let output', inputs', instructionPointer' = executeInstruction memory outputs inputs instructionPointer instruction
+                    loop instructionPointer' output' inputs'                
+        loop 0 [] inputs

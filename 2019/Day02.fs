@@ -10,8 +10,8 @@ module Day02 =
         let memory = getMemory()
         memory.[1] <- 12
         memory.[2] <- 2
-        let res, _ = IntCodeComputer.executeInstructions memory 1
-        Array.head res
+        
+        Array.head (IntCodeComputer.executeInstructions memory [1] |> fst)
 
     let part2() = 
         let rec loop noun =            
@@ -22,7 +22,7 @@ module Day02 =
                     memory.[1] <- noun
                     memory.[2] <- verb
 
-                    let res, _ = IntCodeComputer.executeInstructions memory 1
+                    let res, _ = IntCodeComputer.executeInstructions memory [1]
 
                     verb, Array.head res)
                 |> List.tryFind (snd >> (=) 19690720)
