@@ -68,8 +68,7 @@ module IntCodeComputer =
             memory.[address] <- x
             
             output, Map.add amplifier xs inputBuffer, instructionPointer + 2, amplifier
-        | Output address -> 
-            // printfn "%d" memory.[address]
+        | Output address ->             
             let value = memory.[address]
             match executionMode with
             | Normal ->
@@ -78,13 +77,13 @@ module IntCodeComputer =
                 instructionPointer + 2,
                 amplifier
             | FeedbackLoop ->                
-                let amplifier' = shiftAmplifier amplifier
-                let arguments = match Map.tryFind amplifier' inputBuffer with Some list -> list | None -> []
+                let nextComputerAmplifier = shiftAmplifier amplifier
+                let arguments = match Map.tryFind nextComputerAmplifier inputBuffer with Some list -> list | None -> []
+                
                 output @ [(amplifier, value)], 
-                Map.add amplifier' (arguments @ [value]) inputBuffer,  
+                Map.add nextComputerAmplifier (arguments @ [value]) inputBuffer,  
                 instructionPointer + 2,
-                amplifier'
-            
+                nextComputerAmplifier
         | JumpIfTrue (p1, p2) -> 
             output, inputBuffer, 
                 if getValue memory p1 <> 0 
@@ -113,11 +112,11 @@ module IntCodeComputer =
         | UnknownOpCode -> failwith "Something went wrong"
 
     let executeInstructions (computers: Map<Amplifier, (int * int[])>) inputBuffer amplifier executionMode =
-        let rec loop (computers: Map<Amplifier, (int * int[])>) instructionPointer outputs inputs amplifier =
+        let rec loop (computers: Map<Amplifier, (int * int[])>) instructionPointer outputs inputs currentAmplifier =
             let memory =
-                match Map.tryFind amplifier computers with
+                match Map.tryFind currentAmplifier computers with
                 | Some (_, x) -> x
-                | None -> failwithf "No computer found for amplifier: %A" amplifier
+                | None -> failwithf "No computer found for amplifier: %A" currentAmplifier
             
             if instructionPointer >= memory.Length
             then memory, outputs
@@ -158,15 +157,15 @@ module IntCodeComputer =
                 | Output _ ->
                     match executionMode with
                     | Normal ->
-                        let output', inputs', instructionPointer', amplifier' = executeInstruction memory outputs inputs instructionPointer amplifier executionMode instruction
+                        let output', inputs', instructionPointer', amplifier' = executeInstruction memory outputs inputs instructionPointer currentAmplifier executionMode instruction
                         loop computers instructionPointer' output' inputs' amplifier'
                     | FeedbackLoop ->
-                        let output', inputs', instructionPointer', amplifier' = executeInstruction memory outputs inputs instructionPointer amplifier executionMode instruction
-                        let (_, memory) = Map.find amplifier computers
-                        let (nextPointer, _) = Map.find amplifier' computers
-                        loop (Map.add amplifier (instructionPointer', memory) computers) nextPointer output' inputs' amplifier'
-                | UnknownOpCode -> loop computers (instructionPointer + 1) outputs inputs amplifier
+                        let output', inputs', instructionPointer', nextComputerAmplifier = executeInstruction memory outputs inputs instructionPointer currentAmplifier executionMode instruction
+                        let (_, currentComputerMemory) = Map.find currentAmplifier computers
+                        let (nextComputerInstructionPointer, _) = Map.find nextComputerAmplifier computers
+                        loop (Map.add currentAmplifier (instructionPointer', currentComputerMemory) computers) nextComputerInstructionPointer output' inputs' nextComputerAmplifier
+                | UnknownOpCode -> loop computers (instructionPointer + 1) outputs inputs currentAmplifier
                 | _ ->                     
-                    let output', inputs', instructionPointer', amplifier' = executeInstruction memory outputs inputs instructionPointer amplifier executionMode instruction
+                    let output', inputs', instructionPointer', amplifier' = executeInstruction memory outputs inputs instructionPointer currentAmplifier executionMode instruction
                     loop computers instructionPointer' output' inputs' amplifier'              
         loop computers 0 [] inputBuffer amplifier
