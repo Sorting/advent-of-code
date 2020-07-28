@@ -32,19 +32,24 @@ module Day07 =
     let executeAmplifierControllerFeedbackLoop (phaseSettings: int list) =
         let memory = getMemory() |> Array.map int
 
+        let a, b, c, d, e = 
+            match phaseSettings with
+            | [ a; b; c; d; e ] -> a, b, c, d, e
+            | list ->  failwithf "Expected 5 phase setting arguments, got %d" (List.length list)
+
         let inputBuffer =
-            [ (IntCodeComputer.A, [ phaseSettings.[0]; 0 ])
-              (IntCodeComputer.B, [ phaseSettings.[1] ])
-              (IntCodeComputer.C, [ phaseSettings.[2] ])
-              (IntCodeComputer.D, [ phaseSettings.[3] ])
-              (IntCodeComputer.E, [ phaseSettings.[4] ]) ] |> Map.ofList
+            Map.ofList [ (IntCodeComputer.A, [ phaseSettings.[0]; 0 ])
+                         (IntCodeComputer.B, [ phaseSettings.[1] ])
+                         (IntCodeComputer.C, [ phaseSettings.[2] ])
+                         (IntCodeComputer.D, [ phaseSettings.[3] ])
+                         (IntCodeComputer.E, [ phaseSettings.[4] ]) ]
 
         let computers =
-            [ (IntCodeComputer.A, (0, memory))
-              (IntCodeComputer.B, (0, (Array.copy memory)))
-              (IntCodeComputer.C, (0, (Array.copy memory)))
-              (IntCodeComputer.D, (0, (Array.copy memory)))
-              (IntCodeComputer.E, (0, (Array.copy memory))) ] |> Map.ofList
+            Map.ofList [ (IntCodeComputer.A, (0, memory))
+                         (IntCodeComputer.B, (0, (Array.copy memory)))
+                         (IntCodeComputer.C, (0, (Array.copy memory)))
+                         (IntCodeComputer.D, (0, (Array.copy memory)))
+                         (IntCodeComputer.E, (0, (Array.copy memory))) ]
 
         IntCodeComputer.executeInstructions computers inputBuffer IntCodeComputer.Amplifier.A IntCodeComputer.ExecutionMode.FeedbackLoop              
                 |> snd
