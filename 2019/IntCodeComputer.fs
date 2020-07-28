@@ -28,7 +28,7 @@ module IntCodeComputer =
         | LessThan of Parameter * Parameter * Parameter
         | Equals of Parameter * Parameter * Parameter
         | Halt
-        | UnknownOpCode
+        | UnknownOpCode of int
 
     let shiftAmplifier = function
         | A -> B
@@ -37,24 +37,30 @@ module IntCodeComputer =
         | D -> E
         | E -> A
 
-    let parameterToInt = function Position x -> x | Immediate x -> x     
+    let paramToInt = function Position x -> x | Immediate x -> x     
 
-    let getParameter (parameterModes: string[]) idx value =
-        if parameterModes.Length - 1 < idx 
+    let getParam (paramModes: string[]) idx value =
+        if paramModes.Length - 1 < idx 
         then Position (int value)
         else
-            if int parameterModes.[idx] = 1 
+            if int paramModes.[idx] = 1 
             then Immediate value
             else Position value
 
-    let getValue (memory: int[]) = function Position x -> memory.[x] | Immediate x -> x    
+    let getValue (memory: int[]) = function Position x -> Array.get memory x | Immediate x -> x    
 
-    let executeInstruction (memory: int[]) output (inputBuffer: Map<Amplifier, int list>) instructionPointer amplifier executionMode = function  
+    let executeInstruction (memory: int[]) output inputBuffer instructionPointer amplifier executionMode = function  
         | Add (p1, p2, storeAddress) ->                
-            memory.[parameterToInt storeAddress] <- getValue memory p1 + getValue memory p2
+            Array.set 
+                memory 
+                (paramToInt storeAddress) 
+                (getValue memory p1 + getValue memory p2)            
             output, inputBuffer, instructionPointer + 4, amplifier
         | Multiply (p1, p2, storeAddress) ->                
-            memory.[parameterToInt storeAddress] <- getValue memory p1 * getValue memory p2
+            Array.set 
+                memory 
+                (paramToInt storeAddress) 
+                (getValue memory p1 * getValue memory p2)
             output, inputBuffer, instructionPointer + 4, amplifier
         | Input address ->
             let x, xs = 
@@ -65,11 +71,11 @@ module IntCodeComputer =
                     | x'::xs' -> x', xs'
                 | _ -> failwith "The amplifier %A doesn't have an input values"
             
-            memory.[address] <- x
+            Array.set memory address x            
             
             output, Map.add amplifier xs inputBuffer, instructionPointer + 2, amplifier
         | Output address ->             
-            let value = memory.[address]
+            let value = Array.get memory address
             match executionMode with
             | Normal ->
                 output @ [(amplifier, value)], 
@@ -96,22 +102,22 @@ module IntCodeComputer =
                 then getValue memory p2 
                 else instructionPointer + 3
                 , amplifier
-        | LessThan (p1, p2, storeAddress) ->
-            memory.[parameterToInt storeAddress] <- 
-                if getValue memory p1 < getValue memory p2 
+        | LessThan (p1, p2, address) ->
+            Array.set memory (paramToInt address)             
+                (if getValue memory p1 < getValue memory p2 
                 then 1 
-                else 0
+                else 0)
             output, inputBuffer, instructionPointer + 4, amplifier
-        | Equals (p1, p2, storeAddress) ->
-            memory.[parameterToInt storeAddress] <- 
-                if getValue memory p1 = getValue memory p2 
+        | Equals (p1, p2, address) ->
+            Array.set memory (paramToInt address)             
+                (if getValue memory p1 = getValue memory p2 
                 then 1 
-                else 0
+                else 0)
             output, inputBuffer, instructionPointer + 4, amplifier
         | Halt -> output, inputBuffer, instructionPointer + 1, amplifier
-        | UnknownOpCode -> failwith "Something went wrong"
+        | UnknownOpCode x -> failwithf "Unknown upcode %d" x
 
-    let executeInstructions (computers: Map<Amplifier, (int * int[])>) inputBuffer amplifier executionMode =
+    let executeInstructions computers inputBuffer amplifier executionMode =
         let rec aux (computers: Map<Amplifier, (int * int[])>) instructionPointer outputs inputs currentAmplifier =
             let memory =
                 match Map.tryFind currentAmplifier computers with
@@ -131,41 +137,76 @@ module IntCodeComputer =
                 
                 let instruction =
                     match int opCode with
-                    | 1  -> Add         ( getParameter parameterModes 0 memory.[instructionPointer + 1], 
-                                          getParameter parameterModes 1 memory.[instructionPointer + 2], 
-                                          getParameter parameterModes 2 memory.[instructionPointer + 3] )
-                    | 2  -> Multiply    ( getParameter parameterModes 0 memory.[instructionPointer + 1], 
-                                          getParameter parameterModes 1 memory.[instructionPointer + 2], 
-                                          getParameter parameterModes 2 memory.[instructionPointer + 3] )
-                    | 3  -> Input       ( memory.[instructionPointer + 1] )
-                    | 4  -> Output      ( memory.[instructionPointer + 1] )
-                    | 5  -> JumpIfTrue  ( getParameter parameterModes 0 memory.[instructionPointer + 1], 
-                                          getParameter parameterModes 1 memory.[instructionPointer + 2] )
-                    | 6  -> JumpIfFalse ( getParameter parameterModes 0 memory.[instructionPointer + 1], 
-                                          getParameter parameterModes 1 memory.[instructionPointer + 2] )                                    
-                    | 7  -> LessThan    ( getParameter parameterModes 0 memory.[instructionPointer + 1], 
-                                          getParameter parameterModes 1 memory.[instructionPointer + 2], 
-                                          getParameter parameterModes 2 memory.[instructionPointer + 3] )                                    
-                    | 8  -> Equals      ( getParameter parameterModes 0 memory.[instructionPointer + 1], 
-                                          getParameter parameterModes 1 memory.[instructionPointer + 2], 
-                                          getParameter parameterModes 2 memory.[instructionPointer + 3] )                                    
+                    | 1  -> Add         ( getParam parameterModes 0 (Array.get memory (instructionPointer + 1)), 
+                                          getParam parameterModes 1 (Array.get memory (instructionPointer + 2)), 
+                                          getParam parameterModes 2 (Array.get memory (instructionPointer + 3)) )
+                    | 2  -> Multiply    ( getParam parameterModes 0 (Array.get memory (instructionPointer + 1)), 
+                                          getParam parameterModes 1 (Array.get memory (instructionPointer + 2)), 
+                                          getParam parameterModes 2 (Array.get memory (instructionPointer + 3)) )
+                    | 3  -> Input       ( Array.get memory (instructionPointer + 1) )
+                    | 4  -> Output      ( Array.get memory (instructionPointer + 1) )
+                    | 5  -> JumpIfTrue  ( getParam parameterModes 0 (Array.get memory (instructionPointer + 1)), 
+                                          getParam parameterModes 1 (Array.get memory (instructionPointer + 2)) )
+                    | 6  -> JumpIfFalse ( getParam parameterModes 0 (Array.get memory (instructionPointer + 1)), 
+                                          getParam parameterModes 1 (Array.get memory (instructionPointer + 2)) )                                    
+                    | 7  -> LessThan    ( getParam parameterModes 0 (Array.get memory (instructionPointer + 1)), 
+                                          getParam parameterModes 1 (Array.get memory (instructionPointer + 2)), 
+                                          getParam parameterModes 2 (Array.get memory (instructionPointer + 3)) )                                    
+                    | 8  -> Equals      ( getParam parameterModes 0 (Array.get memory (instructionPointer + 1)), 
+                                          getParam parameterModes 1 (Array.get memory (instructionPointer + 2)), 
+                                          getParam parameterModes 2 (Array.get memory (instructionPointer + 3)) )                                    
                     | 99 -> Halt
-                    | _  -> UnknownOpCode
+                    | x  -> UnknownOpCode x
                     
                 match instruction with
                 | Halt -> memory, outputs
                 | Output _ ->
                     match executionMode with
                     | Normal ->
-                        let output', inputs', instructionPointer', amplifier' = executeInstruction memory outputs inputs instructionPointer currentAmplifier executionMode instruction
+                        let output', inputs', instructionPointer', amplifier' = 
+                            executeInstruction 
+                                memory 
+                                outputs 
+                                inputs 
+                                instructionPointer 
+                                currentAmplifier 
+                                executionMode 
+                                instruction
+                        
                         aux computers instructionPointer' output' inputs' amplifier'
                     | FeedbackLoop ->
-                        let output', inputs', instructionPointer', nextComputerAmplifier = executeInstruction memory outputs inputs instructionPointer currentAmplifier executionMode instruction
+                        let output', inputs', instructionPointer', nextComputerAmplifier = 
+                            executeInstruction 
+                                memory 
+                                outputs 
+                                inputs 
+                                instructionPointer 
+                                currentAmplifier 
+                                executionMode 
+                                instruction
+
                         let (_, currentComputerMemory) = Map.find currentAmplifier computers
                         let (nextComputerInstructionPointer, _) = Map.find nextComputerAmplifier computers
-                        aux (Map.add currentAmplifier (instructionPointer', currentComputerMemory) computers) nextComputerInstructionPointer output' inputs' nextComputerAmplifier
-                | UnknownOpCode -> aux computers (instructionPointer + 1) outputs inputs currentAmplifier
+                        aux 
+                            (Map.add 
+                                currentAmplifier 
+                                (instructionPointer', currentComputerMemory) 
+                                computers)
+                            nextComputerInstructionPointer 
+                            output' 
+                            inputs' 
+                            nextComputerAmplifier
+                | UnknownOpCode x -> failwithf "Unknown upcode %d" x
                 | _ ->                     
-                    let output', inputs', instructionPointer', amplifier' = executeInstruction memory outputs inputs instructionPointer currentAmplifier executionMode instruction
+                    let output', inputs', instructionPointer', amplifier' = 
+                        executeInstruction 
+                            memory 
+                            outputs
+                            inputs
+                            instructionPointer
+                            currentAmplifier
+                            executionMode
+                            instruction                            
+                    
                     aux computers instructionPointer' output' inputs' amplifier'              
         aux computers 0 [] inputBuffer amplifier
