@@ -5,16 +5,17 @@ open System
 [<EntryPoint>]
 let main argv =
     let solutions = 
-        [ ((2015, 1), Year2015.Day01.solve); ((2015, 2), Year2015.Day02.solve); ((2015, 3), Year2015.Day03.solve); 
-          ((2015, 4), Year2015.Day04.solve); ((2015, 5), Year2015.Day05.solve); ((2015, 7), Year2015.Day07.solve); 
-          ((2015, 13), Year2015.Day13.solve)
-          ((2017, 3), Year2017.Day03.solve)
-          ((2018, 1), Year2018.Day01.solve); ((2018, 2), Year2018.Day02.solve); ((2018, 3), Year2018.Day03.solve) 
-          ((2018, 4), Year2018.Day04.solve); ((2018, 5), Year2018.Day05.solve); ((2018, 6), Year2018.Day06.solve)
-          ((2019, 1), Year2019.Day01.solve); ((2019, 2), Year2019.Day02.solve); ((2019, 3), Year2019.Day03.solve)
-          ((2019, 4), Year2019.Day04.solve); ((2019, 5), Year2019.Day05.solve); ((2019, 6), Year2019.Day06.solve)
-          ((2019, 7), Year2019.Day07.solve);
-        ] |> Map.ofList
+        Map.ofList 
+            [ ((2015, 1), Year2015.Day01.solve); ((2015, 2), Year2015.Day02.solve); ((2015, 3), Year2015.Day03.solve); 
+              ((2015, 4), Year2015.Day04.solve); ((2015, 5), Year2015.Day05.solve); ((2015, 7), Year2015.Day07.solve); 
+              ((2015, 13), Year2015.Day13.solve)
+              ((2017, 3), Year2017.Day03.solve)
+              ((2018, 1), Year2018.Day01.solve); ((2018, 2), Year2018.Day02.solve); ((2018, 3), Year2018.Day03.solve) 
+              ((2018, 4), Year2018.Day04.solve); ((2018, 5), Year2018.Day05.solve); ((2018, 6), Year2018.Day06.solve)
+              ((2019, 1), Year2019.Day01.solve); ((2019, 2), Year2019.Day02.solve); ((2019, 3), Year2019.Day03.solve)
+              ((2019, 4), Year2019.Day04.solve); ((2019, 5), Year2019.Day05.solve); ((2019, 6), Year2019.Day06.solve)
+              ((2019, 7), Year2019.Day07.solve);
+            ]
 
     match argv |> List.ofArray with
     | [] -> Map.iter (fun _ solve -> solve()) solutions

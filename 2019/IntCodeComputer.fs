@@ -45,7 +45,7 @@ module IntCodeComputer =
 
     let getParam (paramModes: string []) idx value =
         if paramModes.Length - 1 < idx then Position(int value)
-        else if int paramModes.[idx] = 1 then Immediate value
+        else if (Array.get paramModes idx |> int) = 1 then Immediate value
         else Position value
 
     let getValue (memory: int []) =

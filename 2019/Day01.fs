@@ -8,11 +8,10 @@ module Day01 =
 
     let rec calcFuel fuel mass =
         match fuelFormula mass with
-        | currentFuel when currentFuel > 0 ->
-            calcFuel (fuel + currentFuel) (double currentFuel)
-        | _ -> fuel        
+        | currentFuel when currentFuel > 0 -> calcFuel (fuel + currentFuel) (double currentFuel)
+        | _ -> fuel
 
-    let part1() = Seq.sumBy fuelFormula masses
-    let part2() = Seq.sumBy (calcFuel 0) masses
+    let part1 () = Seq.sumBy fuelFormula masses
+    let part2 () = Seq.sumBy (calcFuel 0) masses
 
-    let solve() = printDay 2019 1 part1 part2
+    let solve () = printDay 2019 1 part1 part2
