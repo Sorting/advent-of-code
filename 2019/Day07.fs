@@ -50,10 +50,10 @@ module Day07 =
                 |> snd
                 |> List.last
     
-    let part1() = 0
-        // List.permutations [0; 1; 2; 3; 4]
-        // |> Seq.map executeAmplifierController        
-        // |> Seq.max 
+    let part1() =
+        List.permutations [0; 1; 2; 3; 4]
+        |> Seq.map executeAmplifierController        
+        |> Seq.max 
 
     let part2() =
         List.permutations [5; 6; 7; 8; 9]
