@@ -8,10 +8,11 @@ module Day02 =
     
     let part1() =        
         let memory = getMemory()
+        let computers = Map.ofList [ (IntCodeComputer.A, (0, memory)) ]
         memory.[1] <- 12
         memory.[2] <- 2
         
-        Array.head (IntCodeComputer.executeInstructions memory [1] |> fst)
+        Array.head (IntCodeComputer.executeInstructions computers ([(IntCodeComputer.Amplifier.A, [1])] |> Map.ofList) IntCodeComputer.Amplifier.A IntCodeComputer.ExecutionMode.Normal |> fst)
 
     let part2() = 
         let rec loop noun =            
@@ -19,10 +20,11 @@ module Day02 =
                 [0..99]
                 |> List.map (fun verb -> 
                     let memory = getMemory()
+                    let computers = Map.ofList [ (IntCodeComputer.A, (0, memory)) ]
                     memory.[1] <- noun
                     memory.[2] <- verb
 
-                    let res, _ = IntCodeComputer.executeInstructions memory [1]
+                    let res, _ = IntCodeComputer.executeInstructions computers ([(IntCodeComputer.Amplifier.A, [1])] |> Map.ofList) IntCodeComputer.Amplifier.A IntCodeComputer.ExecutionMode.Normal
 
                     verb, Array.head res)
                 |> List.tryFind (snd >> (=) 19690720)

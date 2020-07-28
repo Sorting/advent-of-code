@@ -4,8 +4,9 @@ module Day06 =
     open Utilities    
 
     let parser (s: string) =
-        let [| a; b |] = s.Split(")")
-        a, b      
+        match s.Split(")") with 
+        | [| a; b |] -> a, b 
+        | _ -> failwithf "Couldn't parse: %s" s
 
     let findRoot = function
         | [] -> failwith "Cannot find a root with no data"
