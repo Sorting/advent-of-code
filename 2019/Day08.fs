@@ -3,8 +3,7 @@ namespace Year2019
 module Day08 =
     open Utilities
 
-    let imageWidth = 25
-    let imageHeight = 6
+    let w, h = 25, 6
 
     let toEyeFriendlyChar =
         function
@@ -17,7 +16,7 @@ module Day08 =
         |> fun x -> x.ToCharArray()
         |> Array.map (string >> int)
         |> Array.toList
-        |> List.chunkBySize (imageWidth * imageHeight)
+        |> List.chunkBySize (w * h)
 
     let part1 () =
         data
@@ -38,7 +37,7 @@ module Day08 =
              >> string
              >> toEyeFriendlyChar)
         |> List.mapi (fun i s ->            
-            if i % imageWidth = 0 then sprintf "\n%s" s else s)
+            if i % w = 0 then sprintf "\n%s" s else s)
         |> String.concat ""        
 
     let solve () = printDay 2019 8 part1 part2
