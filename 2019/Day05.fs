@@ -10,11 +10,11 @@ module Day05 =
         let memory = getMemory () |> Array.map int
 
         let computers =
-            Map.ofList [ (IntCodeComputer.A, (0, memory)) ]
+            Map.ofList [ (IntcodeComputer.A, (0, memory)) ]
 
-        IntCodeComputer.executeInstructions computers
-            ([ (IntCodeComputer.Amplifier.A, [ 1 ]) ]
-             |> Map.ofList) IntCodeComputer.Amplifier.A IntCodeComputer.ExecutionMode.Normal
+        IntcodeComputer.executeInstructions computers
+            ([ (IntcodeComputer.Amplifier.A, [ 1 ]) ]
+             |> Map.ofList) IntcodeComputer.Amplifier.A IntcodeComputer.ExecutionMode.Normal
         |> snd
         |> List.last
         |> fun (_, x) -> x
@@ -23,11 +23,11 @@ module Day05 =
         let memory = getMemory () |> Array.map int
 
         let computers =
-            Map.ofList [ (IntCodeComputer.A, (0, memory)) ]
+            Map.ofList [ (IntcodeComputer.A, (0, memory)) ]
 
-        IntCodeComputer.executeInstructions computers
-            ([ (IntCodeComputer.Amplifier.A, [ 5 ]) ]
-             |> Map.ofList) IntCodeComputer.Amplifier.A IntCodeComputer.ExecutionMode.Normal
+        IntcodeComputer.executeInstructions computers
+            ([ (IntcodeComputer.Amplifier.A, [ 5 ]) ]
+             |> Map.ofList) IntcodeComputer.Amplifier.A IntcodeComputer.ExecutionMode.Normal
         |> snd
         |> List.last
         |> fun (_, x) -> x

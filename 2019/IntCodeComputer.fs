@@ -1,6 +1,6 @@
 namespace Year2019
 
-module IntCodeComputer =
+module IntcodeComputer =
     open Utilities
 
     type Parameter =
