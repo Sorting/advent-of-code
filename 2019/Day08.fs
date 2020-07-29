@@ -34,6 +34,6 @@ module Day08 =
         |> String.concat ""         
         |> Seq.mapi (fun i c -> if i % imageWidth = 0 then sprintf "\n%c" c else string c)
         |> String.concat ""
-        |> fun x -> x.Replace('1', char 9608).Replace("0", " ")
+        |> fun x -> x.Replace('1', '#').Replace("0", " ")
 
     let solve () = printDay 2019 8 part1 part2
