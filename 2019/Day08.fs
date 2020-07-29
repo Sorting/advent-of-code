@@ -6,6 +6,11 @@ module Day08 =
     let imageWidth = 25
     let imageHeight = 6
 
+    let toEyeFriendlyChar =
+        function
+        | "1" -> "#"
+        | _ -> " "
+
     let data =
         getSingle 2019 8 string
         |> fun x -> x.ToCharArray()
@@ -30,10 +35,10 @@ module Day08 =
              >> List.filter (snd >> (<>) 2)
              >> List.map snd
              >> List.head
-             >> string)        
-        |> String.concat ""         
-        |> Seq.mapi (fun i c -> if i % imageWidth = 0 then sprintf "\n%c" c else string c)
-        |> String.concat ""
-        |> fun x -> x.Replace('1', '#').Replace("0", " ")
+             >> string)
+        |> Seq.mapi (fun i s ->
+            let eyeFriendlyChar = toEyeFriendlyChar s
+            if i % imageWidth = 0 then sprintf "\n%s" eyeFriendlyChar else eyeFriendlyChar)
+        |> String.concat ""        
 
     let solve () = printDay 2019 8 part1 part2
