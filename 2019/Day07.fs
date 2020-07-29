@@ -11,26 +11,26 @@ module Day07 =
         let memory = getMemory ()
 
         let computers =
-            [ (IntCodeComputer.A, (0, memory))
-              (IntCodeComputer.B, (0, memory))
-              (IntCodeComputer.C, (0, memory))
-              (IntCodeComputer.D, (0, memory))
-              (IntCodeComputer.E, (0, memory)) ]
+            [ (IntcodeComputer.A, (0, memory))
+              (IntcodeComputer.B, (0, memory))
+              (IntcodeComputer.C, (0, memory))
+              (IntcodeComputer.D, (0, memory))
+              (IntcodeComputer.E, (0, memory)) ]
             |> Map.ofList
 
         let getOutput x output amplifier =
             let (_, outputValue) = output
-            IntCodeComputer.executeInstructions computers ([ (amplifier, [ x; outputValue ]) ] |> Map.ofList) amplifier
-                IntCodeComputer.ExecutionMode.Normal
+            IntcodeComputer.executeInstructions computers ([ (amplifier, [ x; outputValue ]) ] |> Map.ofList) amplifier
+                IntcodeComputer.ExecutionMode.Normal
             |> snd
             |> List.last
 
         let rec aux output amplifier =
             function
             | [] -> output
-            | x :: xs -> aux (getOutput x output amplifier) (IntCodeComputer.shiftAmplifier amplifier) xs
+            | x :: xs -> aux (getOutput x output amplifier) (IntcodeComputer.shiftAmplifier amplifier) xs
 
-        aux (IntCodeComputer.Amplifier.A, 0) IntCodeComputer.Amplifier.A phaseSettings
+        aux (IntcodeComputer.Amplifier.A, 0) IntcodeComputer.Amplifier.A phaseSettings
 
     let executeAmplifierControllerFeedbackLoop (phaseSettings: int list) =
         let memory = getMemory ()
@@ -42,22 +42,22 @@ module Day07 =
 
         let inputBuffer =
             Map.ofList
-                [ (IntCodeComputer.A, [ a; 0 ])
-                  (IntCodeComputer.B, [ b ])
-                  (IntCodeComputer.C, [ c ])
-                  (IntCodeComputer.D, [ d ])
-                  (IntCodeComputer.E, [ e ]) ]
+                [ (IntcodeComputer.A, [ a; 0 ])
+                  (IntcodeComputer.B, [ b ])
+                  (IntcodeComputer.C, [ c ])
+                  (IntcodeComputer.D, [ d ])
+                  (IntcodeComputer.E, [ e ]) ]
 
         let computers =
             Map.ofList
-                [ (IntCodeComputer.A, (0, memory))
-                  (IntCodeComputer.B, (0, (Array.copy memory)))
-                  (IntCodeComputer.C, (0, (Array.copy memory)))
-                  (IntCodeComputer.D, (0, (Array.copy memory)))
-                  (IntCodeComputer.E, (0, (Array.copy memory))) ]
+                [ (IntcodeComputer.A, (0, memory))
+                  (IntcodeComputer.B, (0, (Array.copy memory)))
+                  (IntcodeComputer.C, (0, (Array.copy memory)))
+                  (IntcodeComputer.D, (0, (Array.copy memory)))
+                  (IntcodeComputer.E, (0, (Array.copy memory))) ]
 
-        IntCodeComputer.executeInstructions computers inputBuffer IntCodeComputer.Amplifier.A
-            IntCodeComputer.ExecutionMode.FeedbackLoop
+        IntcodeComputer.executeInstructions computers inputBuffer IntcodeComputer.Amplifier.A
+            IntcodeComputer.ExecutionMode.FeedbackLoop
         |> snd
         |> List.last
 

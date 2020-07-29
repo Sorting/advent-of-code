@@ -10,14 +10,14 @@ module Day02 =
         let memory = getMemory ()
 
         let computers =
-            Map.ofList [ (IntCodeComputer.A, (0, memory)) ]
+            Map.ofList [ (IntcodeComputer.A, (0, memory)) ]
 
         Array.set memory 1 12
         Array.set memory 2 2
 
         Array.head
-            (IntCodeComputer.executeInstructions computers (Map.ofList [ (IntCodeComputer.Amplifier.A, [ 1 ]) ])
-                 IntCodeComputer.Amplifier.A IntCodeComputer.ExecutionMode.Normal
+            (IntcodeComputer.executeInstructions computers (Map.ofList [ (IntcodeComputer.Amplifier.A, [ 1 ]) ])
+                 IntcodeComputer.Amplifier.A IntcodeComputer.ExecutionMode.Normal
              |> fst)
 
     let part2 () =
@@ -28,15 +28,15 @@ module Day02 =
                     let memory = getMemory ()
 
                     let computers =
-                        Map.ofList [ (IntCodeComputer.A, (0, memory)) ]
+                        Map.ofList [ (IntcodeComputer.A, (0, memory)) ]
 
                     Array.set memory 1 noun
                     Array.set memory 2 verb
 
                     let res, _ =
-                        IntCodeComputer.executeInstructions computers
-                            (Map.ofList [ (IntCodeComputer.Amplifier.A, [ 1 ]) ]) IntCodeComputer.Amplifier.A
-                            IntCodeComputer.ExecutionMode.Normal
+                        IntcodeComputer.executeInstructions computers
+                            (Map.ofList [ (IntcodeComputer.Amplifier.A, [ 1 ]) ]) IntcodeComputer.Amplifier.A
+                            IntcodeComputer.ExecutionMode.Normal
 
                     verb, Array.head res)
                 |> List.tryFind (snd >> (=) 19690720)
