@@ -8,7 +8,7 @@ module Day07 =
     let getMemory () = getSingle 2019 7 parser
 
     let executeAmplifierController (phaseSettings: int list) =
-        let memory = getMemory () |> Array.map int
+        let memory = getMemory ()
 
         let computers =
             [ (IntCodeComputer.A, (0, memory))
@@ -33,7 +33,7 @@ module Day07 =
         aux (IntCodeComputer.Amplifier.A, 0) IntCodeComputer.Amplifier.A phaseSettings
 
     let executeAmplifierControllerFeedbackLoop (phaseSettings: int list) =
-        let memory = getMemory () |> Array.map int
+        let memory = getMemory ()
 
         let a, b, c, d, e =
             match phaseSettings with
@@ -65,10 +65,12 @@ module Day07 =
         List.permutations [ 0; 1; 2; 3; 4 ]
         |> Seq.map executeAmplifierController
         |> Seq.max
+        |> snd
 
     let part2 () =
         List.permutations [ 5; 6; 7; 8; 9 ]
         |> Seq.map executeAmplifierControllerFeedbackLoop
         |> Seq.max
+        |> snd
 
     let solve () = printDay 2019 7 part1 part2
