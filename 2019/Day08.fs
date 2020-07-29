@@ -9,6 +9,7 @@ module Day08 =
     let toEyeFriendlyChar =
         function
         | "1" -> "#"
+        | "-1" -> "\n"
         | _ -> " "
 
     let data =
@@ -30,15 +31,14 @@ module Day08 =
         data
         |> List.collect List.indexed
         |> List.groupBy fst
-        |> List.map
-            (snd
+        |> List.map (snd
              >> List.filter (snd >> (<>) 2)
              >> List.map snd
              >> List.head
-             >> string)
-        |> Seq.mapi (fun i s ->
-            let eyeFriendlyChar = toEyeFriendlyChar s
-            if i % imageWidth = 0 then sprintf "\n%s" eyeFriendlyChar else eyeFriendlyChar)
+             >> string
+             >> toEyeFriendlyChar)
+        |> List.mapi (fun i s ->            
+            if i % imageWidth = 0 then sprintf "\n%s" s else s)
         |> String.concat ""        
 
     let solve () = printDay 2019 8 part1 part2
