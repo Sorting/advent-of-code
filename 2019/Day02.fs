@@ -12,8 +12,8 @@ module Day02 =
         let computers =
             Map.ofList [ (IntCodeComputer.A, (0, memory)) ]
 
-        memory.[1] <- 12
-        memory.[2] <- 2
+        Array.set memory 1 12
+        Array.set memory 2 2
 
         Array.head
             (IntCodeComputer.executeInstructions computers (Map.ofList [ (IntCodeComputer.Amplifier.A, [ 1 ]) ])
