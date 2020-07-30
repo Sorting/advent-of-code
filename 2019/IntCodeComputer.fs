@@ -4,8 +4,8 @@ module IntcodeComputer =
     open Utilities
 
     type Parameter =
-        | Position of bigint
-        | Immediate of bigint
+        | Position of int64
+        | Immediate of int64
 
     type Amplifier =
         | A
@@ -21,8 +21,8 @@ module IntcodeComputer =
     type Instruction =
         | Add of Parameter * Parameter * Parameter
         | Multiply of Parameter * Parameter * Parameter
-        | Input of bigint
-        | Output of bigint
+        | Input of int64
+        | Output of int64
         | JumpIfTrue of Parameter * Parameter
         | JumpIfFalse of Parameter * Parameter
         | LessThan of Parameter * Parameter * Parameter
@@ -31,8 +31,8 @@ module IntcodeComputer =
         | UnknownOpCode of int
 
     type ComputerState =
-        { Pointer: bigint
-          Memory: Map<bigint, bigint> }
+        { Pointer: int64
+          Memory: Map<int64, int64> }
 
     type InstructionResult =
         | Ok of ExecutionState
@@ -40,15 +40,15 @@ module IntcodeComputer =
 
     and ExecutionState =
         { Computers: Map<Amplifier, ComputerState>
-          OutputBuffer: (Amplifier * bigint) list
-          InputBuffer: Map<Amplifier, bigint list>
-          Pointer: bigint
+          OutputBuffer: (Amplifier * int64) list
+          InputBuffer: Map<Amplifier, int64 list>
+          Pointer: int64
           Amplifier: Amplifier
           ExecutionMode: ExecutionMode }
       
     let parser (input: string) =
         input.Split(',')
-        |> Array.mapi (fun i x -> bigint i, x |> bigint.Parse)
+        |> Array.mapi (fun i x -> int64 i, int64 x)
         |> Map.ofArray
 
     let shiftAmplifier =
@@ -69,7 +69,7 @@ module IntcodeComputer =
         else if (Array.get paramModes idx |> int) = 1 then Immediate value
         else Position value
 
-    let getValue (memory: Map<bigint, bigint>) =
+    let getValue (memory: Map<int64, int64>) =
         function
         | Position x ->
             match Map.tryFind x memory with
@@ -93,7 +93,7 @@ module IntcodeComputer =
             Ok
                 { executionState with
                       Computers = Map.add executionState.Amplifier computerState' executionState.Computers
-                      Pointer = executionState.Pointer + (bigint 4) }
+                      Pointer = executionState.Pointer + (int64 4) }
         | Multiply (p1, p2, address) ->
             let a = getValue computerState.Memory p1
             let b = getValue computerState.Memory p2
@@ -105,15 +105,15 @@ module IntcodeComputer =
             Ok
                 { executionState with
                       Computers = Map.add executionState.Amplifier computerState' executionState.Computers
-                      Pointer = executionState.Pointer + (bigint 4) }
+                      Pointer = executionState.Pointer + (int64 4) }
         | Input address ->
             let x, xs, success =
                 match Map.tryFind executionState.Amplifier executionState.InputBuffer with
                 | Some list ->
                     match list with
-                    | [] -> bigint 0, [], false
+                    | [] -> int64 0, [], false
                     | x' :: xs' -> x', xs', true
-                | _ -> bigint 0, [], false
+                | _ -> int64 0, [], false
 
             if not success then
                 Failure(sprintf "No input available for amplifier: %A" executionState.Amplifier)
@@ -126,7 +126,7 @@ module IntcodeComputer =
                     { executionState with
                           Computers = Map.add executionState.Amplifier computerState' executionState.Computers
                           InputBuffer = Map.add executionState.Amplifier xs executionState.InputBuffer
-                          Pointer = executionState.Pointer + (bigint 2) }
+                          Pointer = executionState.Pointer + (int64 2) }
         | Output address ->
             let value = Map.find address computerState.Memory
             match executionState.ExecutionMode with
@@ -136,7 +136,7 @@ module IntcodeComputer =
                           OutputBuffer =
                               executionState.OutputBuffer
                               @ [ (executionState.Amplifier, value) ]
-                          Pointer = executionState.Pointer + (bigint 2) }
+                          Pointer = executionState.Pointer + (int64 2) }
             | FeedbackLoop ->
                 let nextComputerAmplifier = shiftAmplifier executionState.Amplifier
 
@@ -151,27 +151,27 @@ module IntcodeComputer =
                               executionState.OutputBuffer
                               @ [ (executionState.Amplifier, value) ]
                           InputBuffer = Map.add nextComputerAmplifier (arguments @ [ value ]) executionState.InputBuffer
-                          Pointer = executionState.Pointer + (bigint 2)
+                          Pointer = executionState.Pointer + (int64 2)
                           Amplifier = nextComputerAmplifier }
         | JumpIfTrue (p1, p2) ->
             Ok
                 { executionState with
                       Pointer =
-                          if getValue computerState.Memory p1 <> (bigint 0)
+                          if getValue computerState.Memory p1 <> (int64 0)
                           then getValue computerState.Memory p2
-                          else executionState.Pointer + (bigint 3) }
+                          else executionState.Pointer + (int64 3) }
         | JumpIfFalse (p1, p2) ->
             Ok
                 { executionState with
                       Pointer =
-                          if getValue computerState.Memory p1 = (bigint 0)
+                          if getValue computerState.Memory p1 = (int64 0)
                           then getValue computerState.Memory p2
-                          else executionState.Pointer + (bigint 3) }
+                          else executionState.Pointer + (int64 3) }
         | LessThan (p1, p2, address) ->
             let value =
                 if getValue computerState.Memory p1 < getValue computerState.Memory p2
-                then bigint 1
-                else bigint 0
+                then int64 1
+                else int64 0
 
             let computerState' =
                 { computerState with
@@ -180,12 +180,12 @@ module IntcodeComputer =
             Ok
                 { executionState with
                       Computers = Map.add executionState.Amplifier computerState' executionState.Computers
-                      Pointer = executionState.Pointer + (bigint 4) }
+                      Pointer = executionState.Pointer + (int64 4) }
         | Equals (p1, p2, address) ->
             let value =
                 if getValue computerState.Memory p1 = getValue computerState.Memory p2
-                then bigint 1
-                else bigint 0
+                then int64 1
+                else int64 0
 
             let computerState' =
                 { computerState with
@@ -194,11 +194,11 @@ module IntcodeComputer =
             Ok
                 { executionState with
                       Computers = Map.add executionState.Amplifier computerState' executionState.Computers
-                      Pointer = executionState.Pointer + (bigint 4) }
+                      Pointer = executionState.Pointer + (int64 4) }
         | Halt ->
             Ok
                 { executionState with
-                      Pointer = executionState.Pointer + (bigint 1) }
+                      Pointer = executionState.Pointer + (int64 1) }
         | UnknownOpCode x -> Failure(sprintf "Unknown upcode %d" x)
 
     let executeInstructions computers inputBuffer amplifier executionMode =
@@ -222,34 +222,34 @@ module IntcodeComputer =
                 match int opCode with
                 | 1 ->
                     Add
-                        (getParam parameterModes 0 (Map.find (pointer + (bigint 1)) computerState.Memory),
-                         getParam parameterModes 1 (Map.find (pointer + (bigint 2)) computerState.Memory),
-                         getParam parameterModes 2 (Map.find (pointer + (bigint 3)) computerState.Memory))
+                        (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory),
+                         getParam parameterModes 1 (Map.find (pointer + (int64 2)) computerState.Memory),
+                         getParam parameterModes 2 (Map.find (pointer + (int64 3)) computerState.Memory))
                 | 2 ->
                     Multiply
-                        (getParam parameterModes 0 (Map.find (pointer + (bigint 1)) computerState.Memory),
-                         getParam parameterModes 1 (Map.find (pointer + (bigint 2)) computerState.Memory),
-                         getParam parameterModes 2 (Map.find (pointer + (bigint 3)) computerState.Memory))
-                | 3 -> Input(Map.find (pointer + (bigint 1)) computerState.Memory)
-                | 4 -> Output(Map.find (pointer + (bigint 1)) computerState.Memory)
+                        (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory),
+                         getParam parameterModes 1 (Map.find (pointer + (int64 2)) computerState.Memory),
+                         getParam parameterModes 2 (Map.find (pointer + (int64 3)) computerState.Memory))
+                | 3 -> Input(Map.find (pointer + (int64 1)) computerState.Memory)
+                | 4 -> Output(Map.find (pointer + (int64 1)) computerState.Memory)
                 | 5 ->
                     JumpIfTrue
-                        (getParam parameterModes 0 (Map.find (pointer + (bigint 1)) computerState.Memory),
-                         getParam parameterModes 1 (Map.find (pointer + (bigint 2)) computerState.Memory))
+                        (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory),
+                         getParam parameterModes 1 (Map.find (pointer + (int64 2)) computerState.Memory))
                 | 6 ->
                     JumpIfFalse
-                        (getParam parameterModes 0 (Map.find (pointer + (bigint 1)) computerState.Memory),
-                         getParam parameterModes 1 (Map.find (pointer + (bigint 2)) computerState.Memory))
+                        (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory),
+                         getParam parameterModes 1 (Map.find (pointer + (int64 2)) computerState.Memory))
                 | 7 ->
                     LessThan
-                        (getParam parameterModes 0 (Map.find (pointer + (bigint 1)) computerState.Memory),
-                         getParam parameterModes 1 (Map.find (pointer + (bigint 2)) computerState.Memory),
-                         getParam parameterModes 2 (Map.find (pointer + (bigint 3)) computerState.Memory))
+                        (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory),
+                         getParam parameterModes 1 (Map.find (pointer + (int64 2)) computerState.Memory),
+                         getParam parameterModes 2 (Map.find (pointer + (int64 3)) computerState.Memory))
                 | 8 ->
                     Equals
-                        (getParam parameterModes 0 (Map.find (pointer + (bigint 1)) computerState.Memory),
-                         getParam parameterModes 1 (Map.find (pointer + (bigint 2)) computerState.Memory),
-                         getParam parameterModes 2 (Map.find (pointer + (bigint 3)) computerState.Memory))
+                        (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory),
+                         getParam parameterModes 1 (Map.find (pointer + (int64 2)) computerState.Memory),
+                         getParam parameterModes 2 (Map.find (pointer + (int64 3)) computerState.Memory))
                 | 99 -> Halt
                 | x -> UnknownOpCode x
 
@@ -312,4 +312,4 @@ module IntcodeComputer =
                 aux executionState.Computers executionState.Pointer executionState.OutputBuffer
                     executionState.InputBuffer executionState.Amplifier
 
-        aux computers (bigint 0) [] inputBuffer amplifier
+        aux computers (int64 0) [] inputBuffer amplifier

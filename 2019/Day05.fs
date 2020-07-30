@@ -11,11 +11,11 @@ module Day05 =
         let computers =
             Map.ofList
                 [ (IntcodeComputer.A,
-                   { IntcodeComputer.ComputerState.Pointer = (bigint 0)
+                   { IntcodeComputer.ComputerState.Pointer = (int64 0)
                      IntcodeComputer.ComputerState.Memory = memory }) ]
 
         IntcodeComputer.executeInstructions computers
-            ([ (IntcodeComputer.Amplifier.A, [ (bigint 1) ]) ]
+            ([ (IntcodeComputer.Amplifier.A, [ (int64 1) ]) ]
              |> Map.ofList) IntcodeComputer.Amplifier.A IntcodeComputer.ExecutionMode.Normal
         |> fun (_, outputBuffer, _) -> outputBuffer
         |> List.last
@@ -27,11 +27,11 @@ module Day05 =
         let computers =
             Map.ofList
                 [ (IntcodeComputer.A,
-                   { IntcodeComputer.ComputerState.Pointer = (bigint 0)
+                   { IntcodeComputer.ComputerState.Pointer = (int64 0)
                      IntcodeComputer.ComputerState.Memory = memory }) ]
 
         IntcodeComputer.executeInstructions computers
-            ([ (IntcodeComputer.Amplifier.A, [ (bigint 5) ]) ]
+            ([ (IntcodeComputer.Amplifier.A, [ (int64 5) ]) ]
              |> Map.ofList) IntcodeComputer.Amplifier.A IntcodeComputer.ExecutionMode.Normal
         |> fun (_, outputBuffer, _) -> outputBuffer
         |> List.last

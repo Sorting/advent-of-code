@@ -11,18 +11,18 @@ module Day02 =
         let computers =
             Map.ofList
                 [ (IntcodeComputer.A,
-                   { IntcodeComputer.ComputerState.Pointer = (bigint 0)
+                   { IntcodeComputer.ComputerState.Pointer = (int64 0)
                      IntcodeComputer.ComputerState.Memory =
                          memory
-                         |> Map.add (bigint 1) (bigint 12)
-                         |> Map.add (bigint 2) (bigint 2) }) ]
+                         |> Map.add (int64 1) (int64 12)
+                         |> Map.add (int64 2) (int64 2) }) ]
 
-        IntcodeComputer.executeInstructions computers (Map.ofList [ (IntcodeComputer.Amplifier.A, [ (bigint 1) ]) ])
+        IntcodeComputer.executeInstructions computers (Map.ofList [ (IntcodeComputer.Amplifier.A, [ (int64 1) ]) ])
             IntcodeComputer.Amplifier.A IntcodeComputer.ExecutionMode.Normal
         |> fun (computers, _, _) -> computers
         |> Map.find IntcodeComputer.Amplifier.A
         |> fun x -> x.Memory
-        |> Map.find (bigint 0)
+        |> Map.find (int64 0)
 
     let part2 () =
         let rec loop (noun: int) =
@@ -34,22 +34,22 @@ module Day02 =
                     let computers =
                         Map.ofList
                             [ (IntcodeComputer.A,
-                               { IntcodeComputer.ComputerState.Pointer = (bigint 0)
+                               { IntcodeComputer.ComputerState.Pointer = (int64 0)
                                  IntcodeComputer.ComputerState.Memory =
                                      memory
-                                     |> Map.add (bigint 1) (bigint noun)
-                                     |> Map.add (bigint 2) (bigint verb) }) ]
+                                     |> Map.add (int64 1) (int64 noun)
+                                     |> Map.add (int64 2) (int64 verb) }) ]
 
                     let memory =
                         IntcodeComputer.executeInstructions computers
-                            (Map.ofList [ (IntcodeComputer.Amplifier.A, [ (bigint 1) ]) ]) IntcodeComputer.Amplifier.A
+                            (Map.ofList [ (IntcodeComputer.Amplifier.A, [ (int64 1) ]) ]) IntcodeComputer.Amplifier.A
                             IntcodeComputer.ExecutionMode.Normal
                         |> fun (computers, _, _) -> computers
                         |> Map.find IntcodeComputer.Amplifier.A
                         |> fun x -> x.Memory
 
-                    verb, Map.find (bigint 0) memory)
-                |> List.tryFind (snd >> (=) (bigint 19690720))
+                    verb, Map.find (int64 0) memory)
+                |> List.tryFind (snd >> (=) (int64 19690720))
 
             match noun, result with
             | n, _ when n > 99 -> failwith "Couldn't find the chosen ones"
