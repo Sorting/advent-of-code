@@ -4,35 +4,46 @@ module Day07 =
     open Utilities
     open AdventOfCode
 
-    let parser (input: string) = input.Split(',') |> Array.map int
-    let getMemory () = getSingle 2019 7 parser
+    let getMemory () = getSingle 2019 7 IntcodeComputer.parser
 
-    let executeAmplifierController (phaseSettings: int list) =
+    let executeAmplifierController (phaseSettings: bigint list) =
         let memory = getMemory ()
 
         let computers =
-            [ (IntcodeComputer.A, (0, memory))
-              (IntcodeComputer.B, (0, memory))
-              (IntcodeComputer.C, (0, memory))
-              (IntcodeComputer.D, (0, memory))
-              (IntcodeComputer.E, (0, memory)) ]
-            |> Map.ofList
+            Map.ofList
+                [ (IntcodeComputer.A,
+                   { IntcodeComputer.ComputerState.Pointer = (bigint 0)
+                     IntcodeComputer.ComputerState.Memory = memory })
+                  (IntcodeComputer.B,
+                   { IntcodeComputer.ComputerState.Pointer = (bigint 0)
+                     IntcodeComputer.ComputerState.Memory = memory })
+                  (IntcodeComputer.C,
+                   { IntcodeComputer.ComputerState.Pointer = (bigint 0)
+                     IntcodeComputer.ComputerState.Memory = memory })
+                  (IntcodeComputer.D,
+                   { IntcodeComputer.ComputerState.Pointer = (bigint 0)
+                     IntcodeComputer.ComputerState.Memory = memory })
+                  (IntcodeComputer.E,
+                   { IntcodeComputer.ComputerState.Pointer = (bigint 0)
+                     IntcodeComputer.ComputerState.Memory = memory }) ]
 
-        let getOutput x output amplifier =
+        let getOutput computers x output amplifier =
             let (_, outputValue) = output
+
             IntcodeComputer.executeInstructions computers ([ (amplifier, [ x; outputValue ]) ] |> Map.ofList) amplifier
                 IntcodeComputer.ExecutionMode.Normal
-            |> snd
-            |> List.last
+            |> fun (computers, output, _) -> computers, output |> List.last
 
-        let rec aux output amplifier =
+        let rec aux computers output amplifier =
             function
             | [] -> output
-            | x :: xs -> aux (getOutput x output amplifier) (IntcodeComputer.shiftAmplifier amplifier) xs
+            | x :: xs ->
+                let computers, output = getOutput computers x output amplifier
+                aux computers output (IntcodeComputer.shiftAmplifier amplifier) xs
 
-        aux (IntcodeComputer.Amplifier.A, 0) IntcodeComputer.Amplifier.A phaseSettings
+        aux computers (IntcodeComputer.Amplifier.A, (bigint 0)) IntcodeComputer.Amplifier.A phaseSettings
 
-    let executeAmplifierControllerFeedbackLoop (phaseSettings: int list) =
+    let executeAmplifierControllerFeedbackLoop (phaseSettings: bigint list) =
         let memory = getMemory ()
 
         let a, b, c, d, e =
@@ -42,7 +53,7 @@ module Day07 =
 
         let inputBuffer =
             Map.ofList
-                [ (IntcodeComputer.A, [ a; 0 ])
+                [ (IntcodeComputer.A, [ a; bigint 0 ])
                   (IntcodeComputer.B, [ b ])
                   (IntcodeComputer.C, [ c ])
                   (IntcodeComputer.D, [ d ])
@@ -50,25 +61,44 @@ module Day07 =
 
         let computers =
             Map.ofList
-                [ (IntcodeComputer.A, (0, memory))
-                  (IntcodeComputer.B, (0, (Array.copy memory)))
-                  (IntcodeComputer.C, (0, (Array.copy memory)))
-                  (IntcodeComputer.D, (0, (Array.copy memory)))
-                  (IntcodeComputer.E, (0, (Array.copy memory))) ]
+                [ (IntcodeComputer.A,
+                   { IntcodeComputer.ComputerState.Pointer = (bigint 0)
+                     IntcodeComputer.ComputerState.Memory = memory })
+                  (IntcodeComputer.B,
+                   { IntcodeComputer.ComputerState.Pointer = (bigint 0)
+                     IntcodeComputer.ComputerState.Memory = memory })
+                  (IntcodeComputer.C,
+                   { IntcodeComputer.ComputerState.Pointer = (bigint 0)
+                     IntcodeComputer.ComputerState.Memory = memory })
+                  (IntcodeComputer.D,
+                   { IntcodeComputer.ComputerState.Pointer = (bigint 0)
+                     IntcodeComputer.ComputerState.Memory = memory })
+                  (IntcodeComputer.E,
+                   { IntcodeComputer.ComputerState.Pointer = (bigint 0)
+                     IntcodeComputer.ComputerState.Memory = memory }) ]
 
         IntcodeComputer.executeInstructions computers inputBuffer IntcodeComputer.Amplifier.A
             IntcodeComputer.ExecutionMode.FeedbackLoop
-        |> snd
-        |> List.last
+        |> fun (_, output, _) -> List.last output
 
     let part1 () =
-        List.permutations [ 0; 1; 2; 3; 4 ]
+        List.permutations
+            [ bigint 0
+              bigint 1
+              bigint 2
+              bigint 3
+              bigint 4 ]
         |> Seq.map executeAmplifierController
         |> Seq.max
         |> snd
 
     let part2 () =
-        List.permutations [ 5; 6; 7; 8; 9 ]
+        List.permutations
+            [ bigint 5
+              bigint 6
+              bigint 7
+              bigint 8
+              bigint 9 ]
         |> Seq.map executeAmplifierControllerFeedbackLoop
         |> Seq.max
         |> snd

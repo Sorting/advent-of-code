@@ -8,7 +8,7 @@
   <ItemGroup>
     <Compile Include="Utilities.fs" />
     <Compile Include="List.fs" />
-    <Compile Include="2019/IntcodeComputer.fs" />
+    <Compile Include="2019/IntCodeComputer.fs" />
     <Compile Include="BinaryTree.fs" />
     <Compile Include="2015/Day01.fs" />
     <Compile Include="2015/Day02.fs" />

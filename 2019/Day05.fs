@@ -3,32 +3,37 @@ namespace Year2019
 module Day05 =
     open Utilities
 
-    let parser (input: string) = input.Split(',') |> Array.map int
-    let getMemory () = getSingle 2019 5 parser
+    let getMemory () = getSingle 2019 5 IntcodeComputer.parser
 
     let part1 () =
-        let memory = getMemory () |> Array.map int
+        let memory = getMemory ()
 
         let computers =
-            Map.ofList [ (IntcodeComputer.A, (0, memory)) ]
+            Map.ofList
+                [ (IntcodeComputer.A,
+                   { IntcodeComputer.ComputerState.Pointer = (bigint 0)
+                     IntcodeComputer.ComputerState.Memory = memory }) ]
 
         IntcodeComputer.executeInstructions computers
-            ([ (IntcodeComputer.Amplifier.A, [ 1 ]) ]
+            ([ (IntcodeComputer.Amplifier.A, [ (bigint 1) ]) ]
              |> Map.ofList) IntcodeComputer.Amplifier.A IntcodeComputer.ExecutionMode.Normal
-        |> snd
+        |> fun (_, outputBuffer, _) -> outputBuffer
         |> List.last
         |> fun (_, x) -> x
 
     let part2 () =
-        let memory = getMemory () |> Array.map int
+        let memory = getMemory ()
 
         let computers =
-            Map.ofList [ (IntcodeComputer.A, (0, memory)) ]
+            Map.ofList
+                [ (IntcodeComputer.A,
+                   { IntcodeComputer.ComputerState.Pointer = (bigint 0)
+                     IntcodeComputer.ComputerState.Memory = memory }) ]
 
         IntcodeComputer.executeInstructions computers
-            ([ (IntcodeComputer.Amplifier.A, [ 5 ]) ]
+            ([ (IntcodeComputer.Amplifier.A, [ (bigint 5) ]) ]
              |> Map.ofList) IntcodeComputer.Amplifier.A IntcodeComputer.ExecutionMode.Normal
-        |> snd
+        |> fun (_, outputBuffer, _) -> outputBuffer
         |> List.last
         |> fun (_, x) -> x
 
