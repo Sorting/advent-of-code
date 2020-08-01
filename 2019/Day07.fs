@@ -31,8 +31,8 @@ module Day07 =
             let (_, outputValue) = output
 
             IntcodeComputer.executeInstructions computers ([ (amplifier, [ x; outputValue ]) ] |> Map.ofList) amplifier
-                IntcodeComputer.ExecutionMode.Normal
-            |> fun (computers, output, _) -> computers, output |> List.last
+                IntcodeComputer.ExecutionMode.Normal (int64 0)
+            |> fun (computers, output, _, _) -> computers, output |> List.last
 
         let rec aux computers output amplifier =
             function
@@ -77,8 +77,8 @@ module Day07 =
                      IntcodeComputer.ComputerState.Memory = memory }) ]
 
         IntcodeComputer.executeInstructions computers inputBuffer IntcodeComputer.Amplifier.A
-            IntcodeComputer.ExecutionMode.FeedbackLoop
-        |> fun (_, output, _) -> List.last output
+            IntcodeComputer.ExecutionMode.FeedbackLoop (int64 0)
+        |> fun (_, output, _, _) -> List.last output
 
     let part1 () =
         List.permutations
