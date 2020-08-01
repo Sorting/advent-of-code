@@ -87,13 +87,13 @@ module IntcodeComputer =
 
     let getValueOrDefault computerState x =
         match Map.tryFind x computerState.Memory with
-            | Some value -> computerState, value
-            | None -> { computerState with Memory = computerState.Memory |> Map.add x (int64 0) }, (int64 0)
+            | Some value -> value
+            | None -> (int64 0)
 
     let getValue computerState =
         function
         | Position x -> getValueOrDefault computerState x
-        | Immediate x -> computerState, x
+        | Immediate x -> x
         | Relative (x, relativeBasePointer) -> getValueOrDefault computerState (relativeBasePointer + x)
 
     let executeInstruction executionState instruction =
@@ -102,8 +102,8 @@ module IntcodeComputer =
 
         match instruction with
         | Add (p1, p2, address) ->
-            let computerState, a = getValue computerState p1            
-            let computerState, b = getValue computerState p2
+            let a = getValue computerState p1            
+            let b = getValue computerState p2
 
             let computerState' =
                 { computerState with
@@ -114,8 +114,8 @@ module IntcodeComputer =
                       Computers = Map.add executionState.Amplifier computerState' executionState.Computers
                       Pointer = executionState.Pointer + (int64 4) }
         | Multiply (p1, p2, address) ->
-            let computerState, a = getValue computerState p1            
-            let computerState, b = getValue computerState p2            
+            let a = getValue computerState p1            
+            let b = getValue computerState p2            
 
             let computerState' =
                 { computerState with
@@ -147,7 +147,7 @@ module IntcodeComputer =
                           InputBuffer = Map.add executionState.Amplifier xs executionState.InputBuffer
                           Pointer = executionState.Pointer + (int64 2) }
         | Output p ->
-            let computerState, value = getValue computerState p            
+            let value = getValue computerState p            
             printfn "%A" value
             match executionState.ExecutionMode with
             | Normal ->
@@ -176,8 +176,8 @@ module IntcodeComputer =
                           Pointer = executionState.Pointer + (int64 2)
                           Amplifier = nextComputerAmplifier }
         | JumpIfTrue (p1, p2) ->
-            let computerState, a = getValue computerState p1            
-            let computerState, b = getValue computerState p2            
+            let a = getValue computerState p1            
+            let b = getValue computerState p2            
             Ok
                 { executionState with 
                       Computers = Map.add executionState.Amplifier computerState executionState.Computers                     
@@ -186,8 +186,8 @@ module IntcodeComputer =
                           then b
                           else executionState.Pointer + (int64 3) }
         | JumpIfFalse (p1, p2) ->
-            let computerState, a = getValue computerState p1            
-            let computerState, b = getValue computerState p2
+            let a = getValue computerState p1            
+            let b = getValue computerState p2
             Ok
                 { executionState with
                       Computers = Map.add executionState.Amplifier computerState executionState.Computers                     
@@ -196,8 +196,8 @@ module IntcodeComputer =
                           then b
                           else executionState.Pointer + (int64 3) }
         | LessThan (p1, p2, address) ->
-            let computerState, a = getValue computerState p1            
-            let computerState, b = getValue computerState p2
+            let a = getValue computerState p1            
+            let b = getValue computerState p2
 
             let value =
                 if a < b
@@ -213,8 +213,8 @@ module IntcodeComputer =
                       Computers = Map.add executionState.Amplifier computerState' executionState.Computers
                       Pointer = executionState.Pointer + (int64 4) }
         | Equals (p1, p2, address) ->
-            let computerState, a = getValue computerState p1            
-            let computerState, b = getValue computerState p2
+            let a = getValue computerState p1            
+            let b = getValue computerState p2
 
             let value =
                 if a = b
@@ -230,7 +230,7 @@ module IntcodeComputer =
                       Computers = Map.add executionState.Amplifier computerState' executionState.Computers
                       Pointer = executionState.Pointer + (int64 4) }
         | RelativeBaseOffset p ->
-            let computerState, value = getValue computerState p
+            let value = getValue computerState p
             Ok { executionState with
                     Computers = Map.add executionState.Amplifier computerState executionState.Computers
                     RelativeBasePointer = executionState.RelativeBasePointer + value
