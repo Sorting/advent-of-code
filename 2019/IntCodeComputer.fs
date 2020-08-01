@@ -48,16 +48,18 @@ module IntcodeComputer =
           Pointer: int64
           Amplifier: Amplifier
           ExecutionMode: ExecutionMode }
-      
+
     let parser (input: string) =
         input.Split(',')
         |> Array.mapi (fun i x -> int64 i, int64 x)
         |> Map.ofArray
 
-    let opCodeWithParamsPattern = @"^([0-2]{1,10})(01|02|03|04|05|06|07|08|09|99)$"
+    let opCodeWithParamsPattern =
+        @"^([0-2]{1,10})(01|02|03|04|05|06|07|08|09|99)$"
 
-    let validOpCodeWithParamsPattern = function
-        | Regex opCodeWithParamsPattern _-> true
+    let validOpCodeWithParamsPattern =
+        function
+        | Regex opCodeWithParamsPattern _ -> true
         | _ -> false
 
     let shiftAmplifier =
@@ -70,25 +72,25 @@ module IntcodeComputer =
 
     let getAddress =
         function
-        | Position x -> x        
+        | Position x -> x
         | Relative (address, relativeBasePointer) -> relativeBasePointer + address
         | Immediate x -> failwith "Params that we write to can never be in Immediate mode"
 
     let getParam (paramModes: string []) idx value relativeBasePointer =
-        if paramModes.Length - 1 < idx 
-        then Position(value)
-        else 
+        if paramModes.Length - 1 < idx then
+            Position(value)
+        else
             match (Array.get paramModes idx |> int) with
             | 0 -> Position value
             | 1 -> Immediate value
-            | 2 -> Relative (value, relativeBasePointer)
+            | 2 -> Relative(value, relativeBasePointer)
             | x -> failwithf "Parameter mode %d is not supported" x
-        
+
 
     let getValueOrDefault computerState x =
         match Map.tryFind x computerState.Memory with
-            | Some value -> value
-            | None -> (int64 0)
+        | Some value -> value
+        | None -> (int64 0)
 
     let getValue computerState =
         function
@@ -102,7 +104,7 @@ module IntcodeComputer =
 
         match instruction with
         | Add (p1, p2, address) ->
-            let a = getValue computerState p1            
+            let a = getValue computerState p1
             let b = getValue computerState p2
 
             let computerState' =
@@ -114,8 +116,8 @@ module IntcodeComputer =
                       Computers = Map.add executionState.Amplifier computerState' executionState.Computers
                       Pointer = executionState.Pointer + (int64 4) }
         | Multiply (p1, p2, address) ->
-            let a = getValue computerState p1            
-            let b = getValue computerState p2            
+            let a = getValue computerState p1
+            let b = getValue computerState p2
 
             let computerState' =
                 { computerState with
@@ -125,7 +127,7 @@ module IntcodeComputer =
                 { executionState with
                       Computers = Map.add executionState.Amplifier computerState' executionState.Computers
                       Pointer = executionState.Pointer + (int64 4) }
-        | Input p ->            
+        | Input p ->
             let x, xs, success =
                 match Map.tryFind executionState.Amplifier executionState.InputBuffer with
                 | Some list ->
@@ -147,7 +149,7 @@ module IntcodeComputer =
                           InputBuffer = Map.add executionState.Amplifier xs executionState.InputBuffer
                           Pointer = executionState.Pointer + (int64 2) }
         | Output p ->
-            let value = getValue computerState p            
+            let value = getValue computerState p
             printfn "%A" value
             match executionState.ExecutionMode with
             | Normal ->
@@ -176,33 +178,24 @@ module IntcodeComputer =
                           Pointer = executionState.Pointer + (int64 2)
                           Amplifier = nextComputerAmplifier }
         | JumpIfTrue (p1, p2) ->
-            let a = getValue computerState p1            
-            let b = getValue computerState p2            
-            Ok
-                { executionState with 
-                      Computers = Map.add executionState.Amplifier computerState executionState.Computers                     
-                      Pointer =
-                          if a <> (int64 0)
-                          then b
-                          else executionState.Pointer + (int64 3) }
-        | JumpIfFalse (p1, p2) ->
-            let a = getValue computerState p1            
+            let a = getValue computerState p1
             let b = getValue computerState p2
             Ok
                 { executionState with
-                      Computers = Map.add executionState.Amplifier computerState executionState.Computers                     
-                      Pointer =
-                          if a = (int64 0)
-                          then b
-                          else executionState.Pointer + (int64 3) }
+                      Computers = Map.add executionState.Amplifier computerState executionState.Computers
+                      Pointer = if a <> (int64 0) then b else executionState.Pointer + (int64 3) }
+        | JumpIfFalse (p1, p2) ->
+            let a = getValue computerState p1
+            let b = getValue computerState p2
+            Ok
+                { executionState with
+                      Computers = Map.add executionState.Amplifier computerState executionState.Computers
+                      Pointer = if a = (int64 0) then b else executionState.Pointer + (int64 3) }
         | LessThan (p1, p2, address) ->
-            let a = getValue computerState p1            
+            let a = getValue computerState p1
             let b = getValue computerState p2
 
-            let value =
-                if a < b
-                then int64 1
-                else int64 0
+            let value = if a < b then int64 1 else int64 0
 
             let computerState' =
                 { computerState with
@@ -213,13 +206,10 @@ module IntcodeComputer =
                       Computers = Map.add executionState.Amplifier computerState' executionState.Computers
                       Pointer = executionState.Pointer + (int64 4) }
         | Equals (p1, p2, address) ->
-            let a = getValue computerState p1            
+            let a = getValue computerState p1
             let b = getValue computerState p2
 
-            let value =
-                if a = b
-                then int64 1
-                else int64 0
+            let value = if a = b then int64 1 else int64 0
 
             let computerState' =
                 { computerState with
@@ -231,10 +221,11 @@ module IntcodeComputer =
                       Pointer = executionState.Pointer + (int64 4) }
         | RelativeBaseOffset p ->
             let value = getValue computerState p
-            Ok { executionState with
-                    Computers = Map.add executionState.Amplifier computerState executionState.Computers
-                    RelativeBasePointer = executionState.RelativeBasePointer + value
-                    Pointer = executionState.Pointer + (int64 2) }
+            Ok
+                { executionState with
+                      Computers = Map.add executionState.Amplifier computerState executionState.Computers
+                      RelativeBasePointer = executionState.RelativeBasePointer + value
+                      Pointer = executionState.Pointer + (int64 2) }
         | Halt ->
             Ok
                 { executionState with
@@ -242,7 +233,14 @@ module IntcodeComputer =
         | UnknownOpCode x -> Failure(sprintf "Unknown upcode %d" x)
 
     let executeInstructions computers inputBuffer amplifier executionMode relativeBasePointer =
-        let rec aux (computers: Map<Amplifier, ComputerState>) pointer outputBuffer inputBuffer currentAmplifier relativeBasePointer =
+        let rec aux
+                (computers: Map<Amplifier, ComputerState>)
+                pointer
+                outputBuffer
+                inputBuffer
+                currentAmplifier
+                relativeBasePointer
+            =
             let computerState =
                 match Map.tryFind currentAmplifier computers with
                 | Some state -> state
@@ -262,35 +260,60 @@ module IntcodeComputer =
                 match int opCode with
                 | 1 ->
                     Add
-                        (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory) relativeBasePointer,
-                         getParam parameterModes 1 (Map.find (pointer + (int64 2)) computerState.Memory) relativeBasePointer,
-                         getParam parameterModes 2 (Map.find (pointer + (int64 3)) computerState.Memory) relativeBasePointer)
+                        (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory)
+                             relativeBasePointer,
+                         getParam parameterModes 1 (Map.find (pointer + (int64 2)) computerState.Memory)
+                             relativeBasePointer,
+                         getParam parameterModes 2 (Map.find (pointer + (int64 3)) computerState.Memory)
+                             relativeBasePointer)
                 | 2 ->
                     Multiply
-                        (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory) relativeBasePointer,
-                         getParam parameterModes 1 (Map.find (pointer + (int64 2)) computerState.Memory) relativeBasePointer,
-                         getParam parameterModes 2 (Map.find (pointer + (int64 3)) computerState.Memory) relativeBasePointer)
-                | 3 -> Input(getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory) relativeBasePointer)
-                | 4 -> Output(getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory) relativeBasePointer)
+                        (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory)
+                             relativeBasePointer,
+                         getParam parameterModes 1 (Map.find (pointer + (int64 2)) computerState.Memory)
+                             relativeBasePointer,
+                         getParam parameterModes 2 (Map.find (pointer + (int64 3)) computerState.Memory)
+                             relativeBasePointer)
+                | 3 ->
+                    Input
+                        (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory)
+                             relativeBasePointer)
+                | 4 ->
+                    Output
+                        (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory)
+                             relativeBasePointer)
                 | 5 ->
                     JumpIfTrue
-                        (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory) relativeBasePointer,
-                         getParam parameterModes 1 (Map.find (pointer + (int64 2)) computerState.Memory) relativeBasePointer)
+                        (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory)
+                             relativeBasePointer,
+                         getParam parameterModes 1 (Map.find (pointer + (int64 2)) computerState.Memory)
+                             relativeBasePointer)
                 | 6 ->
                     JumpIfFalse
-                        (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory) relativeBasePointer,
-                         getParam parameterModes 1 (Map.find (pointer + (int64 2)) computerState.Memory) relativeBasePointer)
+                        (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory)
+                             relativeBasePointer,
+                         getParam parameterModes 1 (Map.find (pointer + (int64 2)) computerState.Memory)
+                             relativeBasePointer)
                 | 7 ->
                     LessThan
-                        (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory) relativeBasePointer,
-                         getParam parameterModes 1 (Map.find (pointer + (int64 2)) computerState.Memory) relativeBasePointer,
-                         getParam parameterModes 2 (Map.find (pointer + (int64 3)) computerState.Memory) relativeBasePointer)
+                        (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory)
+                             relativeBasePointer,
+                         getParam parameterModes 1 (Map.find (pointer + (int64 2)) computerState.Memory)
+                             relativeBasePointer,
+                         getParam parameterModes 2 (Map.find (pointer + (int64 3)) computerState.Memory)
+                             relativeBasePointer)
                 | 8 ->
                     Equals
-                        (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory) relativeBasePointer,
-                         getParam parameterModes 1 (Map.find (pointer + (int64 2)) computerState.Memory) relativeBasePointer,
-                         getParam parameterModes 2 (Map.find (pointer + (int64 3)) computerState.Memory) relativeBasePointer)
-                | 9 -> RelativeBaseOffset (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory) relativeBasePointer)
+                        (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory)
+                             relativeBasePointer,
+                         getParam parameterModes 1 (Map.find (pointer + (int64 2)) computerState.Memory)
+                             relativeBasePointer,
+                         getParam parameterModes 2 (Map.find (pointer + (int64 3)) computerState.Memory)
+                             relativeBasePointer)
+                | 9 ->
+                    RelativeBaseOffset
+                        (getParam parameterModes 0 (Map.find (pointer + (int64 1)) computerState.Memory)
+                             relativeBasePointer)
                 | 99 -> Halt
                 | x -> UnknownOpCode x
 
@@ -302,11 +325,11 @@ module IntcodeComputer =
                     let executionState =
                         match executeInstruction
                                   { Computers = computers
-                                    OutputBuffer = outputBuffer                                    
+                                    OutputBuffer = outputBuffer
                                     InputBuffer = inputBuffer
                                     Pointer = pointer
                                     Amplifier = currentAmplifier
-                                    ExecutionMode = executionMode 
+                                    ExecutionMode = executionMode
                                     RelativeBasePointer = relativeBasePointer } instruction with
                         | Ok state -> state
                         | Failure message -> failwith message
@@ -317,7 +340,7 @@ module IntcodeComputer =
                     let executionState =
                         match executeInstruction
                                   { Computers = computers
-                                    OutputBuffer = outputBuffer                                    
+                                    OutputBuffer = outputBuffer
                                     InputBuffer = inputBuffer
                                     Pointer = pointer
                                     Amplifier = currentAmplifier
@@ -338,7 +361,8 @@ module IntcodeComputer =
                         (Map.add currentAmplifier
                              { Pointer = executionState.Pointer
                                Memory = currentComputerMemory } executionState.Computers) nextComputerPointer
-                        executionState.OutputBuffer executionState.InputBuffer executionState.Amplifier executionState.RelativeBasePointer
+                        executionState.OutputBuffer executionState.InputBuffer executionState.Amplifier
+                        executionState.RelativeBasePointer
             | UnknownOpCode x -> failwithf "Unknown Opcode %d" x
             | _ ->
                 let executionState =
@@ -348,7 +372,7 @@ module IntcodeComputer =
                                 InputBuffer = inputBuffer
                                 Pointer = pointer
                                 Amplifier = currentAmplifier
-                                ExecutionMode = executionMode 
+                                ExecutionMode = executionMode
                                 RelativeBasePointer = relativeBasePointer } instruction with
                     | Ok state -> state
                     | Failure message -> failwith message
