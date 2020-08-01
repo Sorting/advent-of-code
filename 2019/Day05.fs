@@ -16,8 +16,8 @@ module Day05 =
 
         IntcodeComputer.executeInstructions computers
             ([ (IntcodeComputer.Amplifier.A, [ (int64 1) ]) ]
-             |> Map.ofList) IntcodeComputer.Amplifier.A IntcodeComputer.ExecutionMode.Normal
-        |> fun (_, outputBuffer, _) -> outputBuffer
+             |> Map.ofList) IntcodeComputer.Amplifier.A IntcodeComputer.ExecutionMode.Normal (int64 0)
+        |> fun (_, outputBuffer, _, _) -> outputBuffer
         |> List.last
         |> fun (_, x) -> x
 
@@ -32,8 +32,8 @@ module Day05 =
 
         IntcodeComputer.executeInstructions computers
             ([ (IntcodeComputer.Amplifier.A, [ (int64 5) ]) ]
-             |> Map.ofList) IntcodeComputer.Amplifier.A IntcodeComputer.ExecutionMode.Normal
-        |> fun (_, outputBuffer, _) -> outputBuffer
+             |> Map.ofList) IntcodeComputer.Amplifier.A IntcodeComputer.ExecutionMode.Normal (int64 0)
+        |> fun (_, outputBuffer, _, _) -> outputBuffer
         |> List.last
         |> fun (_, x) -> x
 

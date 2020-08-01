@@ -18,8 +18,8 @@ module Day02 =
                          |> Map.add (int64 2) (int64 2) }) ]
 
         IntcodeComputer.executeInstructions computers (Map.ofList [ (IntcodeComputer.Amplifier.A, [ (int64 1) ]) ])
-            IntcodeComputer.Amplifier.A IntcodeComputer.ExecutionMode.Normal
-        |> fun (computers, _, _) -> computers
+            IntcodeComputer.Amplifier.A IntcodeComputer.ExecutionMode.Normal (int64 0)
+        |> fun (computers, _, _, _) -> computers
         |> Map.find IntcodeComputer.Amplifier.A
         |> fun x -> x.Memory
         |> Map.find (int64 0)
@@ -43,8 +43,8 @@ module Day02 =
                     let memory =
                         IntcodeComputer.executeInstructions computers
                             (Map.ofList [ (IntcodeComputer.Amplifier.A, [ (int64 1) ]) ]) IntcodeComputer.Amplifier.A
-                            IntcodeComputer.ExecutionMode.Normal
-                        |> fun (computers, _, _) -> computers
+                            IntcodeComputer.ExecutionMode.Normal (int64 0)
+                        |> fun (computers, _, _, _) -> computers
                         |> Map.find IntcodeComputer.Amplifier.A
                         |> fun x -> x.Memory
 
