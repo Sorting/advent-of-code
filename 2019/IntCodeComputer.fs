@@ -57,7 +57,7 @@ module IntcodeComputer =
     let opCodeWithParamsPattern = @"^([0-2]{1,10})(01|02|03|04|05|06|07|08|09|99)$"
 
     let validOpCodeWithParamsPattern = function
-        | Regex @"^([0-2]{1,10})(01|02|03|04|05|06|07|08|09|99)$" _-> true
+        | Regex opCodeWithParamsPattern _-> true
         | _ -> false
 
     let shiftAmplifier =
@@ -103,7 +103,7 @@ module IntcodeComputer =
         match instruction with
         | Add (p1, p2, address) ->
             let computerState, a = getValue computerState p1            
-            let computerState, b = getValue computerState p2                        
+            let computerState, b = getValue computerState p2
 
             let computerState' =
                 { computerState with
@@ -125,8 +125,7 @@ module IntcodeComputer =
                 { executionState with
                       Computers = Map.add executionState.Amplifier computerState' executionState.Computers
                       Pointer = executionState.Pointer + (int64 4) }
-        | Input p ->
-            let computerState, value = getValue computerState p
+        | Input p ->            
             let x, xs, success =
                 match Map.tryFind executionState.Amplifier executionState.InputBuffer with
                 | Some list ->
@@ -140,7 +139,7 @@ module IntcodeComputer =
             else
                 let computerState' =
                     { computerState with
-                          Memory = Map.add value x computerState.Memory }
+                          Memory = Map.add (getAddress p) x computerState.Memory }
 
                 Ok
                     { executionState with
