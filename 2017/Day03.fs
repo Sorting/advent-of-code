@@ -17,8 +17,6 @@ module Day03 =
           position = 0, 1
           direction = Up }
 
-    let manhattanDistance = fun (a, b) (c, d) -> abs (a - c) + abs (b - d)
-
     let nextState state =
         let x, y = state.position
         let tryFind key = Map.tryFind key state.map

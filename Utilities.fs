@@ -47,6 +47,8 @@ let (|Regex|_|) pattern input =
     then Some(List.tail [ for g in m.Groups -> g.Value ])
     else None
 
+let manhattanDistance = fun (a, b) (c, d) -> abs (a - c) + abs (b - d)
+
 let unpairwise (x) =
     seq {
         if not (Seq.isEmpty x) then
