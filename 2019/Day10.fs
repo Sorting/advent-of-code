@@ -40,37 +40,6 @@ module Day10 =
         |> List.map (fun (x, _) -> calculateAngle x rootPosition)
         |> List.distinct
         |> List.length
-        
-
-    let stepper grid rootPosition =
-        // let mutable dict = System.Collections.Generic.HashSet<int * int>()
-        let rec aux position visited angles n =
-            let x, y = getCoordinates position
-                 
-            if Set.contains position visited then
-                n
-            else
-                let angle = calculateAngle position rootPosition
-                if Set.contains angle angles then
-                    n
-                else
-                    let visited = Set.add position visited
-                    match Map.tryFind position grid with
-                    | None -> n
-                    | Some item ->
-                        let n', angles' =
-                            match item with
-                            | Empty -> n, angles
-                            | _ when position = rootPosition -> n, angles
-                            | _ -> n + 1, Set.add angle angles
-
-                        [ (aux (Position(x, y + 1)) visited angles' n')
-                          (aux (Position(x, y - 1)) visited angles' n')
-                          (aux (Position(x + 1, y)) visited angles' n')
-                          (aux (Position(x - 1, y)) visited angles' n') ] 
-                        |> List.max                        
-
-        aux rootPosition (set []) (set []) 0
 
     let part1 () =
         grid
@@ -80,11 +49,9 @@ module Day10 =
              >> function
              | Asteroid -> true
              | _ -> false)
-        |> List.map (fst >> calculateAsteroidsInSight grid)        
+        |> List.map (fst >> calculateAsteroidsInSight grid)
         |> List.max
 
-
     let part2 () = 0
-        
 
     let solve () = printDay 2019 10 part1 part2
