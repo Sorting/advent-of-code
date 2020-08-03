@@ -9,7 +9,6 @@ module Day10 =
 
     type Position = Position of int * int
 
-
     let getCoordinates =
         function
         | (Position (x, y)) -> x, y
@@ -19,7 +18,6 @@ module Day10 =
         atan2 (float y2 - float y1) (float x2 - float x1)
         * 180.
         / System.Math.PI
-
 
     let toItem =
         function

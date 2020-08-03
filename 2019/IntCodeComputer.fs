@@ -54,14 +54,6 @@ module IntcodeComputer =
         |> Array.mapi (fun i x -> int64 i, int64 x)
         |> Map.ofArray
 
-    let opCodeWithParamsPattern =
-        @"^([0-2]{1,10})(01|02|03|04|05|06|07|08|09|99)$"
-
-    let validOpCodeWithParamsPattern =
-        function
-        | Regex opCodeWithParamsPattern _ -> true
-        | _ -> false
-
     let shiftAmplifier =
         function
         | A -> B
@@ -248,7 +240,7 @@ module IntcodeComputer =
 
             let opCode, parameterModes =
                 match (string (Map.find pointer computerState.Memory)) with
-                | Regex opCodeWithParamsPattern [ parameterModes; opCode ] ->
+                | Regex @"^([0-2]{1,10})(01|02|03|04|05|06|07|08|09|99)$" [ parameterModes; opCode ] ->
                     int opCode,
                     parameterModes.ToCharArray()
                     |> Array.rev
