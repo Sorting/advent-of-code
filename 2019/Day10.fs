@@ -14,10 +14,13 @@ module Day10 =
         | (Position (x, y)) -> x, y
 
     let calculateAngle p1 p2 =
+        let convertToPositive n =
+            if n >= 0. then n
+            else 360. + n
         let (x1, y1), (x2, y2) = getCoordinates p1, getCoordinates p2
-        (atan2 (float y2 - float y1) (float x2 - float x1)
+        ((atan2 (float y2 - float y1) (float x2 - float x1)
         * 180.
-        / System.Math.PI) - 90.
+        / System.Math.PI) - 90.) |> convertToPositive
 
     let manhattanDistance =
         function
@@ -65,11 +68,7 @@ module Day10 =
                         then aux (n + 1) angles' tail
                         else aux (n + 1) (angles' @ [ (angle, tail') ]) tail
 
-        aux 1 [] angles
-
-    let convertToPositive n =
-        if n >= 0. then n
-        else 360. + n
+        aux 1 [] angles    
 
     let part1 () =
         grid
@@ -88,7 +87,7 @@ module Day10 =
         |> Map.remove rootPosition
         |> Map.toList        
         |> List.filter (snd >> ((=) Asteroid))
-        |> List.map (fun (position, _) -> position, calculateAngle position rootPosition |> convertToPositive)
+        |> List.map (fun (position, _) -> position, calculateAngle position rootPosition)
         |> List.groupBy snd
         |> List.sortBy fst
         |> List.map (fun (angle, asteroids) ->
