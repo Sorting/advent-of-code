@@ -12,6 +12,8 @@ module Day03 =
           position: (int * int) 
           direction: Direction }
 
+    let manhattanDistance = fun (a, b) (c, d) -> abs (a - c) + abs (b - d)    
+
     let initState =
         { map = Map.empty<int * int, int> |> Map.add (0, 0) 1
           position = 0, 1

@@ -46,14 +46,3 @@ let (|Regex|_|) pattern input =
     if m.Success
     then Some(List.tail [ for g in m.Groups -> g.Value ])
     else None
-
-let manhattanDistance = fun (a, b) (c, d) -> abs (a - c) + abs (b - d)
-
-let unpairwise (x) =
-    seq {
-        if not (Seq.isEmpty x) then
-            let (a, b) = Seq.head x
-            yield a
-            yield b
-            yield! Seq.skip 1 x |> Seq.map (fun (_, b) -> b)
-    }
