@@ -92,5 +92,4 @@ module Day10 =
              |> List.sortBy (fun position -> manhattanDistance (rootPosition, position))))
         |> vaporizeAsteroids
 
-
     let solve () = printDay 2019 10 part1 part2
