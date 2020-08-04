@@ -14,17 +14,17 @@ module Day10 =
         | (Position (x, y)) -> x, y
 
     let calculateAngle p1 p2 =
-        let convertToPositive n =
-            if n >= 0. then n
-            else 360. + n
+        let convertToPositive n = if n >= 0. then n else 360. + n
         let (x1, y1), (x2, y2) = getCoordinates p1, getCoordinates p2
         ((atan2 (float y2 - float y1) (float x2 - float x1)
-        * 180.
-        / System.Math.PI) - 90.) |> convertToPositive
+          * 180.
+          / System.Math.PI)
+         - 90.)
+        |> convertToPositive
 
     let manhattanDistance =
         function
-        | (Position (x1, y1)), (Position (x2, y2)) -> abs (x1 - x2) + abs (y1 - y2)    
+        | (Position (x1, y1)), (Position (x2, y2)) -> abs (x1 - x2) + abs (y1 - y2)
 
     let toItem =
         function
@@ -49,26 +49,25 @@ module Day10 =
     let vaporizeAsteroids angles =
         let rec aux n angles' =
             function
-            | [] ->                 
-                if List.isEmpty angles'
-                    then 
-                        printfn "Unsolveable, vaporized all asteroids before hitting 200th"
-                        Position(0, 0), 0
-                    else aux n [] angles'
+            | [] ->
+                if List.isEmpty angles' then
+                    printfn "Unsolveable, vaporized all asteroids before hitting 200th"
+                    Position(0, 0), 0
+                else
+                    aux n [] angles'
             | (angle, asteroids) :: tail ->
                 match asteroids with
                 | [] -> aux n angles' tail
-                | pos :: tail' ->                    
-                    if n = 200
-                    then 
-                        let (Position(x, y)) = pos                    
+                | pos :: tail' ->
+                    if n = 200 then
+                        let (Position (x, y)) = pos
                         pos, ((x * 100) + y)
-                    else 
-                        if (List.isEmpty tail)
-                        then aux (n + 1) angles' tail
-                        else aux (n + 1) (angles' @ [ (angle, tail') ]) tail
+                    else if (List.isEmpty tail) then
+                        aux (n + 1) angles' tail
+                    else
+                        aux (n + 1) (angles' @ [ (angle, tail') ]) tail
 
-        aux 1 [] angles    
+        aux 1 [] angles
 
     let part1 () =
         grid
@@ -85,7 +84,7 @@ module Day10 =
         let rootPosition = part1 () |> fst
         grid
         |> Map.remove rootPosition
-        |> Map.toList        
+        |> Map.toList
         |> List.filter (snd >> ((=) Asteroid))
         |> List.map (fun (position, _) -> position, calculateAngle position rootPosition)
         |> List.groupBy snd
