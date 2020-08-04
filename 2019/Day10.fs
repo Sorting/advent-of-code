@@ -72,11 +72,7 @@ module Day10 =
     let part1 () =
         grid
         |> Map.toList
-        |> List.filter
-            (snd
-             >> function
-             | Asteroid -> true
-             | _ -> false)
+        |> List.filter (snd >> ((=) Asteroid))
         |> List.map (fun (position, _) -> position, calculateAsteroidsInSight grid position)
         |> List.maxBy snd
 
