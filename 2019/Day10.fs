@@ -62,7 +62,7 @@ module Day10 =
                     if n = 200 then
                         let (Position (x, y)) = pos
                         pos, ((x * 100) + y)
-                    else if (List.isEmpty tail) then
+                    elif List.isEmpty tail' then
                         aux (n + 1) angles' tail
                     else
                         aux (n + 1) (angles' @ [ (angle, tail') ]) tail
@@ -86,10 +86,10 @@ module Day10 =
         |> List.groupBy snd
         |> List.sortBy fst
         |> List.map (fun (angle, asteroids) ->
-            (angle,
-             asteroids
-             |> List.map fst
-             |> List.sortBy (fun position -> manhattanDistance (rootPosition, position))))
+            angle,
+            asteroids
+            |> List.map fst
+            |> List.sortBy (fun position -> manhattanDistance (rootPosition, position)))
         |> vaporizeAsteroids
 
     let solve () = printDay 2019 10 part1 part2
