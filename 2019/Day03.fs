@@ -40,12 +40,12 @@ module Day03 =
             let x, y = currentPosition
 
             let newPositions =
-                [ match direction with
-                  | Up distance -> yield! [ for i in 1 .. distance -> x, y - i, steps + i ]
-                  | Down distance -> yield! [ for i in 1 .. distance -> x, y + i, steps + i ]
-                  | Left distance -> yield! [ for i in 1 .. distance -> x - i, y, steps + i ]
-                  | Right distance -> yield! [ for i in 1 .. distance -> x + i, y, steps + i ]
-                  | Unknown -> failwith "Something went wrong!" ]
+                match direction with
+                | Up    distance -> [ for i in 1 .. distance -> x, y - i, steps + i ]
+                | Down  distance -> [ for i in 1 .. distance -> x, y + i, steps + i ]
+                | Left  distance -> [ for i in 1 .. distance -> x - i, y, steps + i ]
+                | Right distance -> [ for i in 1 .. distance -> x + i, y, steps + i ]
+                | Unknown -> failwith "Unknown direction"
 
             let map' =
                 List.fold (fun acc (x, y, currentSteps) ->
