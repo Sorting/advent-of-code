@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,6 +35,7 @@
     <Compile Include="2019/Day08.fs" />
     <Compile Include="2019/Day09.fs" />
     <Compile Include="2019/Day10.fs" />
+    <Compile Include="2020/Day01.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
