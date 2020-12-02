@@ -2,8 +2,9 @@ namespace Year2020
 
 module Day01 =
     open Utilities
+    open AdventOfCode
 
-    let numbers = getMany 2020 1 (int)
+    let numbers = getMany 2020 1 int
     
     let part1() =
         numbers
@@ -23,4 +24,4 @@ module Day01 =
             | Some (x, y, z) -> x * y * z
             | None -> failwith "Didn't find what we were looking for"
 
-    let solve () = printDay 2019 1 part1 part2
+    let solve () = printDay 2020 1 part1 part2
