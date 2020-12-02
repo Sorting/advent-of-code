@@ -14,7 +14,6 @@ module Day02 =
             Policy((int min, int max), character.ToCharArray() |> Array.head, password)
         | _ -> Error
 
-
     let policies = getMany 2020 2 parser
 
     let validateOccurrences = function
