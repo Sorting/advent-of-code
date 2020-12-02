@@ -19,14 +19,13 @@ module Day02 =
 
     let validateOccurrences = function
         | Policy((min, max), character, password) ->
-            let map = 
-                password.ToCharArray()
-                |> Array.countBy id
-                |> Map.ofArray
-
-            match Map.tryFind character map with
-            | Some count -> count >= min && count <= max
-            | _ -> false
+            password.ToCharArray()
+            |> Array.countBy id
+            |> Map.ofArray
+            |> Map.tryFind character
+            |> function
+                | Some count -> count >= min && count <= max
+                | _ -> false
         | _ -> false
 
     let validatePositions = function
