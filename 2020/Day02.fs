@@ -33,17 +33,14 @@ module Day02 =
             let a, b = arr.[idx1-1], arr.[idx2-1]
             (a = character || b = character) && a <> b
         | _ -> false
-    
-    let part1() =
-       policies
-       |> Seq.map validateOccurrences
-       |> Seq.filter ((=) true)
-       |> Seq.length
 
-    let part2() = 
-       policies
-       |> Seq.map validatePositions
+    let validator f =
+        policies
+       |> Seq.map f
        |> Seq.filter ((=) true)
        |> Seq.length
+    
+    let part1() = validator validateOccurrences
+    let part2() = validator validatePositions
 
     let solve () = printDay 2020 2 part1 part2
