@@ -26,19 +26,19 @@ module Day03 =
 
     let map = (getMany 2020 3 string) |> List.ofSeq |> parser
 
-    let rec walk state pos slope grid = 
+    let rec walk state pos slope map = 
         let x, y = pos
         let slopeX, slopeY = slope
 
-        if y >= Array2D.length2 grid 
+        if y >= Array2D.length2 map 
         then state
         else
-            let x = if x >= Array2D.length1 grid then x % Array2D.length1 grid else x
+            let x = if x >= Array2D.length1 map then x % Array2D.length1 map else x
             let state' = 
-                match grid.[x, y] with
+                match map.[x, y] with
                 | Tree -> { state with TreeCount = state.TreeCount + 1 }
                 | _ -> { state with OpenCount = state.OpenCount + 1 }
-            walk state' (x + slopeX, y + slopeY) slope grid
+            walk state' (x + slopeX, y + slopeY) slope map
     
     let initState = { TreeCount = 0; OpenCount = 0 }
     
