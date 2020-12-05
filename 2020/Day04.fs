@@ -30,10 +30,10 @@ module Day04 =
 
     let hasValidFieldValue key value = 
         match (key, value) with
-        | ("byr", value) -> hasValidRange value 1920 2002
-        | ("iyr", value) -> hasValidRange value 2010 2020
-        | ("eyr", value) -> hasValidRange value 2020 2030
-        | ("hgt", value) ->
+        | "byr", value -> hasValidRange value 1920 2002
+        | "iyr", value -> hasValidRange value 2010 2020
+        | "eyr", value -> hasValidRange value 2020 2030
+        | "hgt", value ->
             match value with
             | Regex "^(\\d+)(cm|in)$" [height; unit] ->
                     match unit with
@@ -41,10 +41,10 @@ module Day04 =
                     | "in" -> hasValidRange height 59 76
                     | _ -> false
             | _ -> false
-        | ("hcl", value) -> match value with Regex "^#([0-9a-f]{6})$" [_] -> true | _ -> false
-        | ("ecl", value) -> Set.contains value validEyeColors
-        | ("pid", value) -> match value with Regex "^([0-9]{9})$" [_] -> true | _ -> false
-        | ("cid", _) -> true
+        | "hcl", value -> match value with Regex "^#([0-9a-f]{6})$" [_] -> true | _ -> false
+        | "ecl", value -> Set.contains value validEyeColors
+        | "pid", value -> match value with Regex "^([0-9]{9})$" [_] -> true | _ -> false
+        | "cid", _ -> true
         | _ -> false
 
     let part1() = 
