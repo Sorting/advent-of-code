@@ -5,7 +5,6 @@ module Day05 =
 
     let parser (input: string) = input.ToCharArray() |> List.ofArray
     let instructions = getMany 2020 5 parser |> List.ofSeq
-    let seats = Array2D.create 128 8 0
     let split f l = f (List.length l / 2) l
 
     let rec getSeatId rows columns = function
