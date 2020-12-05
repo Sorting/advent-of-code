@@ -54,7 +54,7 @@ module Day04 =
 
     let part2() =
         passports
-        |> Array.filter (hasRequiredFields <&&> (Map.forall (hasValidFieldValue)))
+        |> Array.filter (hasRequiredFields <&&> Map.forall hasValidFieldValue)
         |> Array.length
 
     let solve () = printDay 2020 4 part1 part2
