@@ -6,16 +6,16 @@ module Day05 =
     let parser (input: string) = input.ToCharArray() |> List.ofArray
     let instructions = getMany 2020 5 parser |> List.ofSeq
     let seats = Array2D.create 128 8 0
-    let devideAndConquer f l = f (List.length l / 2) l
+    let divideAndConquer f l = f (List.length l / 2) l
 
     let rec getSeatId rows columns = function
         | [] -> List.head rows * 8 + List.head columns
         | x :: xs -> 
             match x with
-            | 'F'   -> getSeatId (devideAndConquer List.take rows) columns xs
-            | 'B'   -> getSeatId (devideAndConquer List.skip rows) columns xs
-            | 'L'   -> getSeatId rows (devideAndConquer List.take columns) xs
-            | _     -> getSeatId rows (devideAndConquer List.skip columns) xs
+            | 'F'   -> getSeatId (divideAndConquer List.take rows) columns xs
+            | 'B'   -> getSeatId (divideAndConquer List.skip rows) columns xs
+            | 'L'   -> getSeatId rows (divideAndConquer List.take columns) xs
+            | _     -> getSeatId rows (divideAndConquer List.skip columns) xs
 
     let seatIds = 
         instructions 
