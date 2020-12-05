@@ -28,7 +28,8 @@ module Day04 =
     
     let hasRequiredFields passport = Set.forall (fun rf -> Map.containsKey rf passport) requiredFields
 
-    let hasValidFieldValue = function
+    let hasValidFieldValue key value = 
+        match (key, value) with
         | ("byr", value) -> hasValidRange value 1920 2002
         | ("iyr", value) -> hasValidRange value 2010 2020
         | ("eyr", value) -> hasValidRange value 2020 2030
@@ -53,7 +54,7 @@ module Day04 =
 
     let part2() =
         passports
-        |> Array.filter (hasRequiredFields <&&> (Map.forall (fun key value -> hasValidFieldValue (key, value))))
+        |> Array.filter (hasRequiredFields <&&> (Map.forall (hasValidFieldValue)))
         |> Array.length
 
     let solve () = printDay 2020 4 part1 part2
