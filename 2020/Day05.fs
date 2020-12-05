@@ -23,13 +23,14 @@ module Day05 =
 
     let getMySeatId =
         seq { for row in 0..128 do
-                yield! seq { for column in 0..8 ->
-                                let currentId = row * 8 + column
-                                if  not (Set.contains currentId seatIds) && 
-                                    Set.contains (currentId + 1) seatIds &&
-                                    Set.contains (currentId - 1) seatIds
-                                then Some currentId
-                                else None } }
+                yield! 
+                    seq { for column in 0..8 ->
+                          let currentId = row * 8 + column
+                          if  not (Set.contains currentId seatIds) && 
+                              Set.contains (currentId + 1) seatIds &&
+                              Set.contains (currentId - 1) seatIds
+                          then Some currentId
+                          else None } }
         |> Seq.pick id
     
     let part1() = Set.maxElement seatIds
