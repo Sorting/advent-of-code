@@ -2,15 +2,12 @@ namespace Year2020
 
 module Day04 =
     open Utilities
-    open System.Text.RegularExpressions
     open System
 
-    let parser input =
-        Regex.Split(input, "\n\n")
-        |> Array.filter (String.IsNullOrWhiteSpace >> not)
+    let parser (input: string) =
+        input.Split("\n\n", StringSplitOptions.RemoveEmptyEntries)
         |> Array.map (fun data ->
-            Regex.Split(data, "\n| ")
-            |> Array.filter (String.IsNullOrWhiteSpace >> not)
+            data.Split([| '\n'; ' ' |], StringSplitOptions.RemoveEmptyEntries)
             |> Array.map (fun kv -> 
                 match kv.Split(':', StringSplitOptions.RemoveEmptyEntries) with
                 | [|key; value|] -> (key, value)
