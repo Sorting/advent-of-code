@@ -8,25 +8,21 @@ module Day01 =
     
     let part1() =
         let length = Array.length numbers - 1
-        [ for x in 0..length do            
-            for y in x..length -> 
-                numbers.[x] + numbers.[y], (numbers.[x], numbers.[y]) ]
-        |> Map.ofList
-        |> Map.tryFind 2020
-        |> function
-            | Some (x, y) -> x * y
-            | None -> failwith "Didn't find what we were looking for"
+        seq { for x in 0..length do            
+                for y in x..length -> 
+                    numbers.[x] + numbers.[y], numbers.[x] * numbers.[y] }
+        |> Seq.pick (function
+            | (k, v) when k = 2020 -> Some v
+            | _ -> None )
 
     let part2() =
         let length = Array.length numbers - 1
         [ for x in 0..length do            
             for y in x..length do
                 for z in y..length ->
-                    numbers.[x] + numbers.[y] + numbers.[z], (numbers.[x], numbers.[y], numbers.[z]) ]
-        |> Map.ofList
-        |> Map.tryFind 2020
-        |> function
-            | Some (x, y, z) -> x * y * z
-            | None -> failwith "Didn't find what we were looking for"
+                    numbers.[x] + numbers.[y] + numbers.[z], numbers.[x] * numbers.[y] * numbers.[z] ]
+        |> Seq.pick (function
+            | (k, v) when k = 2020 -> Some v
+            | _ -> None )
 
     let solve () = printDay 2020 1 part1 part2
