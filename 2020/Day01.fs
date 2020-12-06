@@ -4,21 +4,26 @@ module Day01 =
     open Utilities
     open AdventOfCode
 
-    let numbers = getMany 2020 1 int
+    let numbers = getMany 2020 1 int |> Array.ofSeq
     
     let part1() =
-        numbers
-        |> Seq.collect(fun x -> numbers |> Seq.map (fun y -> x + y, (x, y)))
-        |> Map.ofSeq
+        let length = Array.length numbers - 1
+        [ for x in 0..length do            
+            for y in x..length -> 
+                numbers.[x] + numbers.[y], (numbers.[x], numbers.[y]) ]
+        |> Map.ofList
         |> Map.tryFind 2020
         |> function
             | Some (x, y) -> x * y
             | None -> failwith "Didn't find what we were looking for"
 
-    let part2() = 
-        numbers
-        |> Seq.collect(fun x -> numbers |> Seq.collect (fun y -> numbers |> Seq.map (fun z -> x + y + z, (x, y, z))))
-        |> Map.ofSeq
+    let part2() =
+        let length = Array.length numbers - 1
+        [ for x in 0..length do            
+            for y in x..length do
+                for z in y..length ->
+                    numbers.[x] + numbers.[y] + numbers.[z], (numbers.[x], numbers.[y], numbers.[z]) ]
+        |> Map.ofList
         |> Map.tryFind 2020
         |> function
             | Some (x, y, z) -> x * y * z
