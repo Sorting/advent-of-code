@@ -8,25 +8,23 @@ module Day06 =
         input.Split("\n\n", StringSplitOptions.RemoveEmptyEntries)
         |> Array.map (fun groups ->
             groups.Split([| '\n'; ' ' |], StringSplitOptions.RemoveEmptyEntries)
-            |> Array.map (fun answers -> answers.ToCharArray() |> List.ofArray)            
-            |> List.ofArray)
-        |> List.ofArray
+            |> Array.map (fun answers -> answers.ToCharArray()))
 
     let groupAnswers = getSingle 2020 6 parser
     
     let part1() = 
         groupAnswers 
-        |> List.map (List.collect id >> Set.ofList)
-        |> List.fold (fun acc x -> acc + Set.count x) 0
+        |> Array.map (Array.collect id >> Set.ofArray)
+        |> Array.fold (fun acc x -> acc + Set.count x) 0
     
     let part2() =
         groupAnswers 
-        |> List.map (fun members -> 
+        |> Array.map (fun members -> 
             members 
-            |> List.collect id 
-            |> List.countBy id 
-            |> List.filter (fun (_, count) -> count = List.length members) 
-            |> List.length)
-        |> List.reduce (+)
+            |> Array.collect id 
+            |> Array.countBy id 
+            |> Array.filter (fun (_, count) -> count = Array.length members)
+            |> Array.length)
+        |> Array.reduce (+)
 
     let solve () = printDay 2020 6 part1 part2
