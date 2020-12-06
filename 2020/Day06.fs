@@ -7,7 +7,7 @@ module Day06 =
     let parser (input: string) =
         input.Split("\n\n", StringSplitOptions.RemoveEmptyEntries)
         |> Array.map (fun groups ->
-            groups.Split([| '\n'; ' ' |], StringSplitOptions.RemoveEmptyEntries)
+            groups.Split('\n', StringSplitOptions.RemoveEmptyEntries)
             |> Array.map (fun answers -> answers.ToCharArray()))
 
     let groupAnswers = getSingle 2020 6 parser
