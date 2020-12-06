@@ -25,9 +25,8 @@ module Day06 =
             members 
             |> List.collect id 
             |> List.countBy id 
-            |> Map.ofList 
-            |> Map.filter (fun _ count -> count = List.length members) 
-            |> Map.count)
+            |> List.filter (fun (_, count) -> count = List.length members) 
+            |> List.length)
         |> List.reduce (+)
 
     let solve () = printDay 2020 6 part1 part2
