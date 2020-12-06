@@ -17,7 +17,7 @@ let main argv =
               ((2019, 7), Year2019.Day07.solve); ((2019, 8), Year2019.Day08.solve); ((2019, 9), Year2019.Day09.solve)
               ((2019, 10), Year2019.Day10.solve)
               ((2020, 1), Year2020.Day01.solve); ((2020, 2), Year2020.Day02.solve); ((2020, 3), Year2020.Day03.solve)
-              ((2020, 4), Year2020.Day04.solve); ((2020, 5), Year2020.Day05.solve);
+              ((2020, 4), Year2020.Day04.solve); ((2020, 5), Year2020.Day05.solve); ((2020, 6), Year2020.Day06.solve);
             ]
 
     match argv |> List.ofArray with
