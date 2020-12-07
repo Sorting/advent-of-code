@@ -17,13 +17,11 @@ module Day03 =
 
     let rec walk count pos slope map = 
         let x, y = pos
-        let slopeX, slopeY = slope
+        let sx, sy = slope
 
         if y >= Array2D.length2 map 
         then count
-        else
-            let x = if x >= Array2D.length1 map then x % Array2D.length1 map else x
-            walk (if map.[x, y] = '#' then count + 1 else count) (x + slopeX, y + slopeY) slope map
+        else walk (if map.[x % Array2D.length1 map, y] = '#' then count + 1 else count) (x + sx, y + sy) slope map
     
     let part1() = walk 0 (0, 0) (3, 1) map
 

@@ -13,7 +13,7 @@ module Day01 =
                     numbers.[x] + numbers.[y], numbers.[x] * numbers.[y] }
         |> Seq.pick (function
             | (k, v) when k = 2020 -> Some v
-            | _ -> None )
+            | _ -> None)
 
     let part2() =
         let length = Array.length numbers - 1
@@ -23,6 +23,6 @@ module Day01 =
                     numbers.[x] + numbers.[y] + numbers.[z], numbers.[x] * numbers.[y] * numbers.[z] ]
         |> Seq.pick (function
             | (k, v) when k = 2020 -> Some v
-            | _ -> None )
+            | _ -> None)
 
     let solve () = printDay 2020 1 part1 part2

@@ -19,21 +19,14 @@ module Day05 =
     let seatIds = 
         instructions 
         |> List.map (getSeatId [0..127] [0..7]) 
-        |> Set.ofList
+        |> List.sort
 
     let getMySeatId =
-        seq { for row in 0..128 do
-                yield! 
-                    seq { for column in 0..8 ->
-                          let currentId = row * 8 + column
-                          if  not (Set.contains currentId seatIds) && 
-                              Set.contains (currentId + 1) seatIds &&
-                              Set.contains (currentId - 1) seatIds
-                          then Some currentId
-                          else None } }
+        seq { for i in 1..127 ->
+                if seatIds.[i + 1] - seatIds.[i - 1] = 2 then Some (seatIds.[i - 1] + 1) else None }
         |> Seq.pick id
     
-    let part1() = Set.maxElement seatIds
+    let part1() = List.last seatIds
     let part2() = getMySeatId
 
     let solve () = printDay 2020 5 part1 part2

@@ -22,22 +22,22 @@ let getMany year day parser =
 let (<&&>) f g s = f s && g s
 
 let printDay year day part1 part2 =
-    Console.ForegroundColor <- ConsoleColor.Yellow
-    printfn "### %d Day %s ###" year (if day < 10 then sprintf "0%d" day else string day)
+    Console.ForegroundColor <- ConsoleColor.DarkRed
+    printfn "\n🎄🎄-%d Day %s-🎄🎄" year (if day < 10 then sprintf "0%d" day else string day)
     Console.ForegroundColor <- ConsoleColor.White
 
     let printExecutionTime seconds =
-        Console.ForegroundColor <- ConsoleColor.Green
-        printfn "- It took %f seconds" seconds
+        Console.ForegroundColor <- ConsoleColor.DarkGreen
+        printf " - It took %f seconds\n" seconds
         Console.ForegroundColor <- ConsoleColor.White
 
     let sw = Stopwatch.StartNew()
 
-    printfn "Part 1: %s" (part1().ToString())
+    printf "🎅 Part 1: %s" (part1().ToString().PadLeft(40))
     printExecutionTime sw.Elapsed.TotalSeconds
     sw.Restart()
 
-    printfn "Part 2: %s" (part2().ToString())
+    printf "🎅 Part 2: %s" (part2().ToString().PadLeft(40))
     printExecutionTime sw.Elapsed.TotalSeconds
     sw.Stop()
 
