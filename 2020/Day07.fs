@@ -10,20 +10,20 @@ module Day07 =
         let matches = Regex.Matches(line, "(?<n>[0-9]) (?<color>[a-z]+ [a-z]+)")
         color, matches |> Seq.map (fun m -> m.Groups.["color"].Value, int (m.Groups.["n"].Value)) |> Map.ofSeq
 
-    let rec hasBag bag key map =
-        match Map.tryFind key map with
-        | Some neighbours -> 
-            if Map.containsKey bag neighbours then true
-            else Map.exists (fun key _ -> hasBag bag key map) neighbours
+    let rec hasBag bag key bagMap =
+        match Map.tryFind key bagMap with
+        | Some bags -> 
+            if Map.containsKey bag bags then true
+            else Map.exists (fun key _ -> hasBag bag key bagMap) bags
         | None -> false
 
-    let rec countBags bag count map =
-        match Map.tryFind bag map with
+    let rec countBags bag total bagMap =
+        match Map.tryFind bag bagMap with
         | Some bags -> 
-            count + 1 + (bags 
+            total + 1 + (bags 
             |> Map.toList 
-            |> List.sumBy (fun (key, numBags) -> countBags key count map * numBags))
-        | None -> count
+            |> List.sumBy (fun (key, bagCount) -> countBags key total bagMap * bagCount))
+        | None -> total
 
     let bagMap = getMany 2020 7 parser |> Map.ofSeq
     
