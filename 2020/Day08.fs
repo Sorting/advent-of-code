@@ -20,14 +20,14 @@ module Day08 =
         |> Map.ofSeq
 
     let rec executeInstructions instructions visited pos acc =            
-            match Set.contains pos visited, Map.tryFind pos instructions with
-            | true, _ -> acc, false
-            | _, Some instruction ->
-                match instruction with
-                | Jmp value -> executeInstructions instructions (Set.add pos visited) (pos + value) acc 
-                | Acc value -> executeInstructions instructions (Set.add pos visited) (pos + 1) (acc + value)
-                | Nop(_)    -> executeInstructions instructions (Set.add pos visited) (pos + 1) acc
-            | _ -> acc, true
+        match Set.contains pos visited, Map.tryFind pos instructions with
+        | true, _ -> acc, false
+        | _, Some instruction ->
+            match instruction with
+            | Jmp value -> executeInstructions instructions (Set.add pos visited) (pos + value) acc 
+            | Acc value -> executeInstructions instructions (Set.add pos visited) (pos + 1) (acc + value)
+            | Nop(_)    -> executeInstructions instructions (Set.add pos visited) (pos + 1) acc
+        | _ -> acc, true
     
     let rec runProgram pos instructions =
         match Map.tryFind pos instructions with 
