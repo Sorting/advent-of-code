@@ -13,12 +13,12 @@ module Day09 =
         | true -> None
         | _ -> Some n
     
-    let rec findInvalidNumberSum invalidNumber = function
+    let rec findRange invalidNumber = function
         | [] -> None
         | range -> 
             if List.sum range = invalidNumber 
             then Some (List.min range + List.max range)
-            else findInvalidNumberSum invalidNumber (List.tail range)
+            else findRange invalidNumber (List.tail range)
 
     let part1() = 
         numbers 
@@ -29,6 +29,6 @@ module Day09 =
         let invalidNumber = part1()
         numbers 
         |> Seq.windowed (Seq.length numbers / 4)
-        |> Seq.pick (List.ofArray >> findInvalidNumberSum invalidNumber)         
+        |> Seq.pick (List.ofArray >> findRange invalidNumber)         
 
     let solve () = printDay 2020 9 part1 part2
