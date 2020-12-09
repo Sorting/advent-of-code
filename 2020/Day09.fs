@@ -6,7 +6,7 @@ module Day09 =
     let numbers = getMany 2020 9 int64
     let preambleSize = 25
 
-    let preamble size numbers =
+    let findInvalid size numbers =
         let n = Array.last numbers
         let lookup = Array.take size numbers |> Set.ofArray
         match Set.exists (fun x -> Set.contains (n - x) lookup) lookup with
@@ -23,7 +23,7 @@ module Day09 =
     let part1() = 
         numbers 
         |> Seq.windowed (preambleSize + 1) 
-        |> Seq.pick (preamble preambleSize)
+        |> Seq.pick (findInvalid preambleSize)
 
     let part2() =
         let invalidNumber = part1()
