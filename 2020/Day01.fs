@@ -2,7 +2,6 @@ namespace Year2020
 
 module Day01 =
     open Utilities
-    open AdventOfCode
 
     let numbers = getMany 2020 1 int |> Array.ofSeq
     
