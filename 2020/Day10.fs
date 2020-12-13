@@ -19,8 +19,8 @@ module Day10 =
 
     let rec countValidArrangements count pos =
         if pos = adapters.Length-1 then 1I
-        else match dict.ContainsKey pos with
-                | true  -> dict.[pos]
+        else match dict.TryGetValue pos with
+                | true, value  -> value
                 | _ ->
                     let count' = 
                         [ for i in pos + 1 .. (match pos + 3 with x when x < adapters.Length -> x | _ -> adapters.Length - 1) ->
