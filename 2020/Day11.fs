@@ -6,7 +6,7 @@ open System
 module Day11 =
     open Utilities
 
-    type Item = Floor | Empty | Occupied
+    type Seat = Floor | Empty | Occupied
 
     let parser y (line: string) =
         line.ToCharArray()
@@ -19,29 +19,29 @@ module Day11 =
         |> Seq.collect id
         |> Map.ofSeq
 
-    let tester t map pos  =
+    let checkPos seat map pos  =
         match Map.tryFind pos map with
-        | Some t' -> if t = Empty then t' = t || t' = Floor else t' = t
-        | _ -> t = Empty
+        | Some seat' -> if seat = Empty then seat' = Empty || seat' = Floor else seat' = Occupied
+        | _ -> seat = Empty
 
     let rec sol map =
         let map' = 
             map 
-            |> Map.map (fun (x, y) t -> 
+            |> Map.map (fun (x, y) seat -> 
                 let adjecents = 
                     [ (x, y-1); (x-1, y); (x, y+1); (x+1, y)
                       (x-1, y-1); (x-1, y+1); (x+1, y+1); (x+1, y-1)]
-                match t with
+                match seat with
                 | Empty -> 
                     adjecents 
-                    |> List.forall (tester Empty map)
-                    |> function true -> Occupied | _ -> t
+                    |> List.forall (checkPos Empty map)
+                    |> function true -> Occupied | _ -> seat
                 | Occupied ->
                     adjecents
-                    |> List.filter (tester Occupied map)
+                    |> List.filter (checkPos Occupied map)
                     |> List.length
-                    |> fun length -> if length > 3 then Empty else t
-                | _ -> t)
+                    |> fun length -> if length > 3 then Empty else seat
+                | _ -> seat)
         
         if map <> map'
         then sol map'
