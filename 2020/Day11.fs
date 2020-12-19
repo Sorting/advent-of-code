@@ -54,9 +54,9 @@ module Day11 =
                 |> List.length
                 |> fun length -> if length >= n then Empty else Occupied
             | _ -> Floor ) map
-        if map <> map'
-        then reachEquilibrium rule n map'
-        else map |> Map.filter (fun _ t -> t = Occupied) |> Map.count
+        if map = map'
+        then map |> Map.filter (fun _ t -> t = Occupied) |> Map.count
+        else reachEquilibrium rule n map'
 
     let part1() = reachEquilibrium DirectAdjacents 4 map 
     let part2() = reachEquilibrium AdjacentsInShight 5 map
