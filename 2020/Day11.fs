@@ -20,11 +20,11 @@ module Day11 =
 
     let rec check rule lookingFor position map direction =
         let x, y = position 
-        let nextPos = 
+        let nextPosition = 
             match direction with
             | W  -> x-1, y | NW -> x-1, y-1 | N  -> x, y-1 | NE -> x+1, y-1
             | E  -> x+1, y | SE -> x+1, y+1 | S  -> x, y+1 | SW -> x-1, y+1
-        match Map.tryFind nextPos map with
+        match Map.tryFind nextPosition map with
         | Some nextSeat ->
             match rule with
             | DirectAdjacents ->
@@ -37,20 +37,20 @@ module Day11 =
                 | Occupied, Occupied -> true
                 | Empty, Occupied    -> false
                 | Occupied, Empty    -> false
-                | _ -> check rule lookingFor nextPos map direction
+                | _ -> check rule lookingFor nextPosition map direction
         | _ -> lookingFor = Empty
 
     let rec reachEquilibrium rule n map =
-        let map' = Map.map (fun pos seat -> 
+        let map' = Map.map (fun position seat -> 
             let directions = [ W; NW; N; NE; E; SE; S; SW]
             match seat with
             | Empty -> 
                 directions 
-                |> List.forall (check rule Empty pos map)
+                |> List.forall (check rule Empty position map)
                 |> function true -> Occupied | _ -> Empty
             | Occupied ->
                 directions
-                |> List.filter (check rule Occupied pos map)
+                |> List.filter (check rule Occupied position map)
                 |> List.length
                 |> fun length -> if length >= n then Empty else Occupied
             | _ -> Floor ) map
