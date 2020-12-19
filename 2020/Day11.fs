@@ -1,16 +1,15 @@
 namespace Year2020
-open System.Text
-open System.Security.Cryptography
-open System
 
 module Day11 =
     open Utilities
 
     type Seat = Floor | Empty | Occupied
+    type Rule = DirectAdjacents | AdjacentsInShight
+    type Direction = W | NW | N | NE | E | SE | S | SW
 
     let parser y (line: string) =
         line.ToCharArray()
-        |> Array.mapi (fun x c -> (x, y), match c with '.' -> Floor | _ -> Occupied)
+        |> Array.mapi (fun x c -> (x, y), match c with '.' -> Floor | '#' -> Occupied | _ -> Empty)
         |> List.ofArray
         
     let map = 
@@ -19,35 +18,47 @@ module Day11 =
         |> Seq.collect id
         |> Map.ofSeq
 
-    let checkPos seat map pos  =
-        match Map.tryFind pos map with
-        | Some seat' -> if seat = Empty then seat' = Empty || seat' = Floor else seat' = Occupied
-        | _ -> seat = Empty
+    let rec check rule lookingFor position map direction =
+        let x, y = position 
+        let nextPos = 
+            match direction with
+            | W  -> x-1, y | NW -> x-1, y-1 | N  -> x, y-1 | NE -> x+1, y-1
+            | E  -> x+1, y | SE -> x+1, y+1 | S  -> x, y+1 | SW -> x-1, y+1
+        match Map.tryFind nextPos map with
+        | Some nextSeat ->
+            match rule with
+            | DirectAdjacents ->
+                match lookingFor with
+                | Empty -> nextSeat = Empty || nextSeat = Floor
+                | _ -> nextSeat = Occupied
+            | _ ->
+                match lookingFor, nextSeat with
+                | Empty, Empty       -> true
+                | Occupied, Occupied -> true
+                | Empty, Occupied    -> false
+                | Occupied, Empty    -> false
+                | _ -> check rule lookingFor nextPos map direction
+        | _ -> lookingFor = Empty
 
-    let rec sol map =
-        let map' = 
-            map 
-            |> Map.map (fun (x, y) seat -> 
-                let adjecents = 
-                    [ (x, y-1); (x-1, y); (x, y+1); (x+1, y)
-                      (x-1, y-1); (x-1, y+1); (x+1, y+1); (x+1, y-1)]
-                match seat with
-                | Empty -> 
-                    adjecents 
-                    |> List.forall (checkPos Empty map)
-                    |> function true -> Occupied | _ -> seat
-                | Occupied ->
-                    adjecents
-                    |> List.filter (checkPos Occupied map)
-                    |> List.length
-                    |> fun length -> if length > 3 then Empty else seat
-                | _ -> seat)
-        
+    let rec reachEquilibrium rule n map =
+        let map' = Map.map (fun pos seat -> 
+            let directions = [ W; NW; N; NE; E; SE; S; SW]
+            match seat with
+            | Empty -> 
+                directions 
+                |> List.forall (check rule Empty pos map)
+                |> function true -> Occupied | _ -> Empty
+            | Occupied ->
+                directions
+                |> List.filter (check rule Occupied pos map)
+                |> List.length
+                |> fun length -> if length >= n then Empty else Occupied
+            | _ -> Floor ) map
         if map <> map'
-        then sol map'
-        else map
+        then reachEquilibrium rule n map'
+        else map |> Map.filter (fun _ t -> t = Occupied) |> Map.count
 
-    let part1() = sol map |> Map.filter (fun _ t -> t = Occupied) |> Map.count
-    let part2() = 0
+    let part1() = reachEquilibrium DirectAdjacents 4 map 
+    let part2() = reachEquilibrium AdjacentsInShight 5 map
 
     let solve () = printDay 2020 11 part1 part2
