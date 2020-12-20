@@ -7,7 +7,7 @@ module Day10 =
     let mutable adapters = getMany 2020 10 (int64) |> Seq.sort |> List.ofSeq |> fun xs -> 0L :: xs @ [List.max xs + 3L]
 
     let rec findDiffs counter last = function
-        | [] -> (fst counter, snd counter), fst counter * snd counter
+        | [] -> fst counter * snd counter
         | x :: xs ->
             let (ones, threes) = counter
             match int (x - last) with
