@@ -46,7 +46,7 @@ module Day12 =
         let angle = toAngle direction
         match instruction with
         | Right degrees -> toDirection ((angle + degrees) % 360)
-        | Left degrees  -> toDirection ((360 + ((angle - degrees) % 360)) % 360)
+        | Left degrees  -> toDirection ((360 + ((angle - degrees))) % 360)
         | x -> failwithf "Only Right and Left are valid, you provided: '%A'" x
 
     let rec move position direction = function
