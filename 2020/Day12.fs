@@ -24,7 +24,6 @@ module Day12 =
         | _ -> failwith "Unknown instruction" 
 
     let instructions = getMany 2020 12 parser |> List.ofSeq
-
     let manhattandistance = fun (a, b) (c, d) ->  abs (a - c) + abs (b - d)
 
     let moveForward position direction value =
@@ -34,12 +33,12 @@ module Day12 =
         | Direction.East  -> (x + value, y) | Direction.West  -> (x - value, y)
 
     let toAngle = function
-        | Direction.North -> 0 | Direction.East  -> 90
-        | Direction.South -> 180 | Direction.West  -> 270
+        | Direction.North -> 0   | Direction.East -> 90
+        | Direction.South -> 180 | Direction.West -> 270
 
     let toDirection = function
-        | 0     -> Direction.North | 90    -> Direction.East
-        | 180   -> Direction.South | 270   -> Direction.West
+        | 0     -> Direction.North | 90  -> Direction.East
+        | 180   -> Direction.South | 270 -> Direction.West
         | x -> failwithf "Invalid value: %d" x
 
     let turn direction instruction =
