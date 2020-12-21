@@ -70,7 +70,7 @@ module Day12 =
         let angle = toAngle direction
         match instruction with
         | Right degrees -> toDirection ((angle + degrees) % 360), waypoint
-        | Left degrees  -> toDirection ((360 + ((angle - degrees))) % 360), waypoint
+        | Left degrees  -> toDirection ((360 + (angle - degrees)) % 360), waypoint
         | x -> failwithf "Invalid instruction: '%A'" x
 
     let rec move moveType waypoint ship direction = function
