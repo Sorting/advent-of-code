@@ -25,18 +25,17 @@ module Day12 =
         | _ -> failwith "Unknown instruction" 
 
     let instructions = getMany 2020 12 parser |> List.ofSeq
-    let manhattandistance = fun (a, b) (c, d) ->  abs (a - c) + abs (b - d)
+    let manhattanDistance = fun (a, b) (c, d) ->  abs (a - c) + abs (b - d)
 
     let moveForward moveType waypoint ship direction value =
-        let (wx, wy) = waypoint
-        let (sx, sy) = ship
+        let wx, wy = waypoint
+        let sx, sy = ship
         match moveType with
         | Ship ->
             match direction with 
-            | Direction.North -> (wx, wy + value) | Direction.South -> (wx, wy - value) 
-            | Direction.East  -> (wx + value, wy) | Direction.West  -> (wx - value, wy)
-        | _ -> (sx + (wx * value), sy + (wy * value)) 
-
+            | Direction.North -> wx, wy + value | Direction.South -> wx, wy - value 
+            | Direction.East  -> wx + value, wy | Direction.West  -> wx - value, wy
+        | Waypoint -> sx + (wx * value), sy + (wy * value)
 
     let toAngle = function
         | Direction.North -> 0   | Direction.East -> 90
@@ -66,8 +65,8 @@ module Day12 =
     let turn moveType waypoint direction instruction =
         let waypoint =
             match moveType with
-            | Ship -> waypoint
-            | _ -> rotate waypoint instruction
+            | Ship     -> waypoint
+            | Waypoint -> rotate waypoint instruction
         let angle = toAngle direction
         match instruction with
         | Right degrees -> toDirection ((angle + degrees) % 360), waypoint
@@ -77,8 +76,8 @@ module Day12 =
     let rec move moveType waypoint ship direction = function
         | [] -> 
             match moveType with
-            | Ship     -> manhattandistance (0, 0) waypoint
-            | Waypoint -> manhattandistance (0, 0) ship
+            | Ship     -> manhattanDistance (0, 0) waypoint
+            | Waypoint -> manhattanDistance (0, 0) ship
         | instruction :: xs ->
             let (x, y) = waypoint
             match instruction with
@@ -86,15 +85,13 @@ module Day12 =
             | South value   -> move moveType (x, y - value) ship direction xs
             | East value    -> move moveType (x + value, y) ship direction xs
             | West value    -> move moveType (x - value, y) ship direction xs
-            | Left _ 
-            | Right _   -> 
+            | Left _ | Right _ -> 
                 let direction, waypoint = turn moveType waypoint direction instruction
                 move moveType waypoint ship direction xs
             | Forward value -> 
                 match moveType with
-                | Ship -> move Ship (moveForward moveType waypoint ship direction value) ship direction xs
-                | _ -> move Waypoint waypoint (moveForward moveType waypoint ship direction value) direction xs
-                    
+                | Ship     -> move Ship (moveForward moveType waypoint ship direction value) ship direction xs
+                | Waypoint -> move Waypoint waypoint (moveForward moveType waypoint ship direction value) direction xs
 
     let part1() = move Ship (0, 0) (0, 0) Direction.East instructions
     let part2() = move Waypoint (10, 1) (0, 0) Direction.East instructions
