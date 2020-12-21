@@ -1,10 +1,11 @@
 namespace Year2020
-open System.Collections.Generic
 
 module Day12 =
     open Utilities
 
     type Direction = North | South | East  | West
+    type Rotate = Clockwise | CounterClockwise
+    type MoveType = Ship | Waypoint
 
     type Instruction =
         | North of int | South of int
@@ -26,11 +27,16 @@ module Day12 =
     let instructions = getMany 2020 12 parser |> List.ofSeq
     let manhattandistance = fun (a, b) (c, d) ->  abs (a - c) + abs (b - d)
 
-    let moveForward position direction value =
-        let (x, y) = position
-        match direction with 
-        | Direction.North -> (x, y - value) | Direction.South -> (x, y + value) 
-        | Direction.East  -> (x + value, y) | Direction.West  -> (x - value, y)
+    let moveForward moveType waypoint ship direction value =
+        let (wx, wy) = waypoint
+        let (sx, sy) = ship
+        match moveType with
+        | Ship ->
+            match direction with 
+            | Direction.North -> (wx, wy + value) | Direction.South -> (wx, wy - value) 
+            | Direction.East  -> (wx + value, wy) | Direction.West  -> (wx - value, wy)
+        | _ -> (sx + (wx * value), sy + (wy * value)) 
+
 
     let toAngle = function
         | Direction.North -> 0   | Direction.East -> 90
@@ -41,27 +47,56 @@ module Day12 =
         | 180   -> Direction.South | 270 -> Direction.West
         | x -> failwithf "Invalid value: %d" x
 
-    let turn direction instruction =
+    let rotate position instruction = 
+        let rec rotate90 position orientation = 
+            let x, y = position
+            match orientation with
+            | Clockwise _ -> y, -x
+            | CounterClockwise -> -y, x
+        
+        let formula degrees orientation = 
+            [ 1..degrees/90] 
+            |> List.fold (fun acc _ -> rotate90 acc orientation) position
+        
+        match instruction with
+        | Right degrees -> formula degrees Clockwise
+        | Left degrees  -> formula degrees CounterClockwise
+        | x -> failwithf "Invalid instruction: '%A'" x  
+
+    let turn moveType waypoint direction instruction =
+        let waypoint =
+            match moveType with
+            | Ship -> waypoint
+            | _ -> rotate waypoint instruction
         let angle = toAngle direction
         match instruction with
-        | Right degrees -> toDirection ((angle + degrees) % 360)
-        | Left degrees  -> toDirection ((360 + ((angle - degrees))) % 360)
-        | x -> failwithf "Only Right and Left are valid, you provided: '%A'" x
+        | Right degrees -> toDirection ((angle + degrees) % 360), waypoint
+        | Left degrees  -> toDirection ((360 + ((angle - degrees))) % 360), waypoint
+        | x -> failwithf "Invalid instruction: '%A'" x
 
-    let rec move position direction = function
-        | [] -> manhattandistance (0, 0) position
+    let rec move moveType waypoint ship direction = function
+        | [] -> 
+            match moveType with
+            | Ship     -> manhattandistance (0, 0) waypoint
+            | Waypoint -> manhattandistance (0, 0) ship
         | instruction :: xs ->
-            let (x, y) = position
+            let (x, y) = waypoint
             match instruction with
-            | North value   -> move (x, y - value) direction xs
-            | South value   -> move (x, y + value) direction xs
-            | East value    -> move (x + value, y) direction xs
-            | West value    -> move (x - value, y) direction xs
-            | Left value    -> move position (turn direction (Left value)) xs
-            | Right value   -> move position (turn direction (Right value)) xs
-            | Forward value -> move (moveForward position direction value) direction xs
+            | North value   -> move moveType (x, y + value) ship direction xs
+            | South value   -> move moveType (x, y - value) ship direction xs
+            | East value    -> move moveType (x + value, y) ship direction xs
+            | West value    -> move moveType (x - value, y) ship direction xs
+            | Left _ 
+            | Right _   -> 
+                let direction, waypoint = turn moveType waypoint direction instruction
+                move moveType waypoint ship direction xs
+            | Forward value -> 
+                match moveType with
+                | Ship -> move Ship (moveForward moveType waypoint ship direction value) ship direction xs
+                | _ -> move Waypoint waypoint (moveForward moveType waypoint ship direction value) direction xs
+                    
 
-    let part1() = move (0, 0) Direction.East instructions
-    let part2() = 0
+    let part1() = move Ship (0, 0) (0, 0) Direction.East instructions
+    let part2() = move Waypoint (10, 1) (0, 0) Direction.East instructions
 
     let solve () = printDay 2020 12 part1 part2
