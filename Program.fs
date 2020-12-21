@@ -6,8 +6,8 @@ open System
 let main argv =
     let solutions = 
         Map.ofList 
-            [ ((2015, 1), Year2015.Day01.solve); ((2015, 2), Year2015.Day02.solve); ((2015, 3), Year2015.Day03.solve); 
-              ((2015, 4), Year2015.Day04.solve); ((2015, 5), Year2015.Day05.solve); ((2015, 7), Year2015.Day07.solve); 
+            [ ((2015, 1), Year2015.Day01.solve); ((2015, 2), Year2015.Day02.solve); ((2015, 3), Year2015.Day03.solve) 
+              ((2015, 4), Year2015.Day04.solve); ((2015, 5), Year2015.Day05.solve); ((2015, 7), Year2015.Day07.solve) 
               ((2015, 13), Year2015.Day13.solve)
               ((2017, 3), Year2017.Day03.solve)
               ((2018, 1), Year2018.Day01.solve); ((2018, 2), Year2018.Day02.solve); ((2018, 3), Year2018.Day03.solve) 
@@ -20,6 +20,7 @@ let main argv =
               ((2020, 4), Year2020.Day04.solve); ((2020, 5), Year2020.Day05.solve); ((2020, 6), Year2020.Day06.solve)
               ((2020, 7), Year2020.Day07.solve); ((2020, 8), Year2020.Day08.solve); ((2020, 9), Year2020.Day09.solve)
               ((2020, 10), Year2020.Day10.solve); ((2020, 11), Year2020.Day11.solve); ((2020, 12), Year2020.Day12.solve)
+              ((2020, 13), Year2020.Day13.solve)
             ]
 
     match argv |> List.ofArray with

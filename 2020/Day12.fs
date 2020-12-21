@@ -47,7 +47,7 @@ module Day12 =
         | x -> failwithf "Invalid value: %d" x
 
     let rotate position instruction = 
-        let rec rotate90 position orientation = 
+        let rotate90 position orientation = 
             let x, y = position
             match orientation with
             | Clockwise _ -> y, -x
