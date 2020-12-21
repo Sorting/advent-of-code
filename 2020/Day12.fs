@@ -79,7 +79,7 @@ module Day12 =
             | Ship     -> manhattanDistance (0, 0) waypoint
             | Waypoint -> manhattanDistance (0, 0) ship
         | instruction :: xs ->
-            let (x, y) = waypoint
+            let x, y = waypoint
             match instruction with
             | North value   -> move moveType (x, y + value) ship direction xs
             | South value   -> move moveType (x, y - value) ship direction xs
