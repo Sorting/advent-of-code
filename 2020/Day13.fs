@@ -36,11 +36,11 @@ module Day13 =
         |> fun (id, minutesWaiting) -> id * minutesWaiting
     
     let part2() =
-            let busLines = busLinesWithEarliestArrivals 0L 
-            let _, firstBusLine = Seq.head busLines
-            Seq.skip 1 busLines
-            |> Seq.fold (fun (timestamp, step) (idx, value) -> calculateTimestamp idx timestamp step value) (0L, firstBusLine)
-            |> fst
+        let busLines = busLinesWithEarliestArrivals 0L 
+        let _, firstBusLine = Seq.head busLines
+        Seq.skip 1 busLines
+        |> Seq.fold (fun (timestamp, step) (idx, value) -> calculateTimestamp idx timestamp step value) (0L, firstBusLine)
+        |> fst
 
     let solve () = printDay 2020 13 part1 part2
     
