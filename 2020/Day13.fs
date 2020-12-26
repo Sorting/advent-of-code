@@ -7,20 +7,40 @@ module Day13 =
     let parser (input: string) =
         match input.Split('\n') with
         | [| arrivalTimestamp; busLines |] -> 
-            let arrivalTimestamp = int arrivalTimestamp
+            let arrivalTimestamp = int64 arrivalTimestamp
             arrivalTimestamp, 
-            busLines.Split(',')
-            |> Seq.ofArray 
-            |> Seq.choose (fun x ->
-                match Int32.TryParse(x) with
-                | true, value -> Some (value, value - (arrivalTimestamp % value))
-                | _ -> None)
-            |> Seq.sortBy snd
+                busLines.Split(',') 
+                |> Array.mapi (fun i b -> match Int64.TryParse b with true, x -> Some (int64 i, x) | _ -> None)
+                |> Seq.ofArray
         | _ -> failwith "Invalid input"
-    
+
+    let getEarliestArrival arrivalTimestamp busLines =
+        Seq.choose (fun busLine ->
+            match busLine with
+            | Some(i, value) -> Some (value, (i, value - (arrivalTimestamp % value)))
+            | _ -> None) busLines
+
     let arrivalTimestamp, lines = getSingle 2020 13 parser
+    let busLinesWithEarliestArrivals x = getEarliestArrival x lines |> Seq.map snd
+
+    let rec calculateTimestamp idx timestamp step busLine =
+        if (timestamp + idx) % busLine = 0L 
+        then timestamp, step * busLine
+        else calculateTimestamp idx (timestamp + step) step busLine
+
+    let part1() = 
+        getEarliestArrival arrivalTimestamp lines 
+        |> Seq.map (fun (id, (_, busLine)) -> id, busLine) 
+        |> Seq.sortBy snd 
+        |> Seq.head 
+        |> fun (id, minutesWaiting) -> id * minutesWaiting
     
-    let part1() = lines |> Seq.head |> fun (id, watingMinutes) -> id * watingMinutes
-    let part2() = 0
+    let part2() =
+            let busLines = busLinesWithEarliestArrivals 0L 
+            let _, firstBusLine = Seq.head busLines
+            Seq.skip 1 busLines
+            |> Seq.fold (fun (timestamp, step) (idx, value) -> calculateTimestamp idx timestamp step value) (0L, firstBusLine)
+            |> fst
 
     let solve () = printDay 2020 13 part1 part2
+    
