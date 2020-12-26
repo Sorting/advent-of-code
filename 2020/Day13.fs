@@ -11,14 +11,12 @@ module Day13 =
             arrivalTimestamp, 
                 busLines.Split(',') 
                 |> Array.mapi (fun i b -> match Int64.TryParse b with true, x -> Some (int64 i, x) | _ -> None)
+                |> Array.choose id
                 |> Seq.ofArray
         | _ -> failwith "Invalid input"
 
     let getEarliestArrival arrivalTimestamp busLines =
-        Seq.choose (fun busLine ->
-            match busLine with
-            | Some(i, value) -> Some (value, (i, value - (arrivalTimestamp % value)))
-            | _ -> None) busLines
+        Seq.map (fun (i, value) -> value, (i, value - (arrivalTimestamp % value))) busLines
 
     let arrivalTimestamp, lines = getSingle 2020 13 parser
     let busLinesWithEarliestArrivals x = getEarliestArrival x lines |> Seq.map snd
