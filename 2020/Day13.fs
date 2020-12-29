@@ -30,7 +30,7 @@ module Day13 =
         getEarliestArrival arrivalTimestamp lines 
         |> Seq.map (fun (id, (_, busLine)) -> id, busLine) 
         |> Seq.sortBy snd 
-        |> Seq.head 
+        |> Seq.head
         |> fun (id, minutesWaiting) -> id * minutesWaiting
     
     let part2() =

@@ -37,7 +37,7 @@ module Day12 =
             | Direction.East  -> wx + value, wy | Direction.West  -> wx - value, wy
         | Waypoint -> sx + (wx * value), sy + (wy * value)
 
-    let toAngle = function
+    let toDegree = function
         | Direction.North -> 0   | Direction.East -> 90
         | Direction.South -> 180 | Direction.West -> 270
 
@@ -67,7 +67,7 @@ module Day12 =
             match moveType with
             | Ship     -> waypoint
             | Waypoint -> rotate waypoint instruction
-        let angle = toAngle direction
+        let angle = toDegree direction
         match instruction with
         | Right degrees -> toDirection ((angle + degrees) % 360), waypoint
         | Left degrees  -> toDirection ((360 + angle - degrees) % 360), waypoint
