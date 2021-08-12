@@ -22,7 +22,7 @@ module Day14 =
 
     let instructions = getMany 2020 14 parser |> Seq.toList
 
-    let applyMask (bitMask: string) (value: int64) =        
+    let applyMask bitMask (value: int64) =        
         let b = Convert.ToString(value, 2).PadLeft(36, '0').ToCharArray() 
         bitMask 
         |> Seq.iteri (fun i x -> if x <> 'X' then b.[i] <- x)
@@ -39,7 +39,7 @@ module Day14 =
         |> List.ofSeq
         |> List.map (fun x -> x |> List.mapi (fun i x -> arr.[i], x))
     
-    let applyMaskV2 (bitMask: string) (value: int64) =
+    let applyMaskV2 bitMask (value: int64) =
         let b = Convert.ToString(value, 2).PadLeft(36, '0').ToCharArray()
         let bits = 
              bitMask 
