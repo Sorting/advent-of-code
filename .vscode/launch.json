@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/bin/Debug/net5.0/aoc.dll",
-            "args": ["2020", "14"],
+            "args": ["2020", "15"],
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
             "stopAtEntry": false,
