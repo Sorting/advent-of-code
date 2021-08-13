@@ -10,7 +10,7 @@ module Day15 =
   
     let numbers = getSingle 2020 15 (string >> (fun x -> x.Split(','))) |> Array.map int |> Array.toList
 
-    let rec turn turnNumber game = function
+    let rec turn turnNumber game endTurn = function
         | [] ->
             let game' =
                 match game.First with
@@ -28,12 +28,12 @@ module Day15 =
                         | Some (_, l) -> false, l
                         | None -> true, 0
                     { game with LastSpoken = Some age; Turns = Map.add age (last, turnNumber) game.Turns; First = isFirst }
-            if turnNumber = 2020 then game'
-            else turn (turnNumber + 1) game' []
+            if turnNumber = endTurn then game'.LastSpoken.Value 
+            else turn (turnNumber + 1) game' endTurn []
         | x :: xs ->
-            turn (turnNumber + 1) { game with Turns = Map.add x (0, turnNumber) game.Turns; LastSpoken = Some x; First = not (Map.containsKey x game.Turns) } xs
+            turn (turnNumber + 1) { game with Turns = Map.add x (0, turnNumber) game.Turns; LastSpoken = Some x; First = not (Map.containsKey x game.Turns) } endTurn xs
 
-    let part1() = (turn 1 { Turns = Map.empty; LastSpoken = None; First = false } numbers).LastSpoken.Value
-    let part2() = 0 
+    let part1() = (turn 1 { Turns = Map.empty; LastSpoken = None; First = false } 2020 numbers)
+    let part2() = (turn 1 { Turns = Map.empty; LastSpoken = None; First = false } 30000000 numbers)
 
     let solve () = printDay 2020 15 part1 part2
