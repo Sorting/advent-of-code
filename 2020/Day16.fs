@@ -28,16 +28,16 @@ module Day16 =
             if value >= min && value <= max then if reverse then Some value else None 
             else findInvalidValue value reverse xs
 
-    let rec findCandidates value candidateFields = function
-        | [] -> candidateFields 
-        | RangeRule(field, min, max) :: xs ->
-            if value >= min && value <= max then findCandidates value (field :: candidateFields) xs
-            else findCandidates value candidateFields xs
-
     let part1() = 
         ticketTranslator.Tickets
         |> List.collect (fun values -> values |> List.choose (fun value -> findInvalidValue value false ticketTranslator.Rules))
         |> List.sum
+
+    let rec findCandidates value candidateFields = function
+    | [] -> candidateFields 
+    | RangeRule(field, min, max) :: xs ->
+        if value >= min && value <= max then findCandidates value (field :: candidateFields) xs
+        else findCandidates value candidateFields xs
 
     let part2() = 
         let myTicket = List.head ticketTranslator.Tickets
@@ -66,11 +66,10 @@ module Day16 =
         |> List.sortBy (snd >> List.length) 
         |> List.fold (fun map (field, candidates) ->
             candidates
-            |> List.filter (fun idx -> not (Map.containsKey idx map))
-            |> List.head
+            |> List.find (fun idx -> not (Map.containsKey idx map))
             |> fun idx -> Map.add idx field map) Map.empty
         |> Map.toList
-        |> List.filter (fun (_, field) -> field.Contains("departure"))
+        |> List.filter (fun (_, field) -> field.StartsWith("departure"))
         |> List.map (fun (idx, _) -> int64 (List.item idx myTicket))
         |> List.reduce (*) 
 
