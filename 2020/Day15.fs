@@ -33,7 +33,9 @@ module Day15 =
         | x :: xs ->
             turn (turnNumber + 1) { game with Turns = Map.add x (0, turnNumber) game.Turns; LastSpoken = Some x; First = not (Map.containsKey x game.Turns) } endTurn xs
 
-    let part1() = (turn 1 { Turns = Map.empty; LastSpoken = None; First = false } 2020 numbers)
-    let part2() = (turn 1 { Turns = Map.empty; LastSpoken = None; First = false } 30000000 numbers)
+    let initState = { Turns = Map.empty; LastSpoken = None; First = false }
+
+    let part1() = turn 1 initState 2020 numbers
+    let part2() = turn 1 initState 30000000 numbers
 
     let solve () = printDay 2020 15 part1 part2
