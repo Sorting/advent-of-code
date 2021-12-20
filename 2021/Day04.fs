@@ -35,7 +35,7 @@ module Day04 =
             [ 0..4 ] |> List.exists (fun i -> [0..4] |> List.forall (fun j -> Map.find (j, i) board |> snd))
         ]
 
-    let updateBoards boards exclNo =
+    let markBoards boards exclNo =
         List.map (fun board -> 
             match Map.tryFindKey (fun _ (v, _) -> v = exclNo) board with
             | Some key -> Map.add key (exclNo, true) board
@@ -45,7 +45,7 @@ module Day04 =
         let rec turn boards = function
             | [] -> failwithf "went through all numbers, no bingo"
             | exclNo :: xs ->
-                let boards = updateBoards boards exclNo
+                let boards = markBoards boards exclNo
                 List.tryPick (fun board -> if isBingo board then Some board else None) boards
                 |> function
                     | None -> turn boards xs
@@ -53,19 +53,19 @@ module Day04 =
         turn boards numbers
 
     let findLastWinner boards numbers =
-        let rec turn boards winners lastWinExclNo = function
-            | [] -> List.last winners, lastWinExclNo
+        let rec turn boards lastWinner lastWinExclNo = function
+            | [] -> lastWinner, lastWinExclNo
             | exclNo :: xs ->
-                let boards = updateBoards boards exclNo
+                let boards = markBoards boards exclNo
                 List.choose (fun board -> if isBingo board then Some board else None) boards
                 |> function
-                    | [] -> turn boards winners lastWinExclNo xs
-                    | newWinners ->
-                        let boards = List.filter (fun b -> not (List.contains b newWinners)) boards
-                        turn boards (winners @ newWinners) exclNo xs
-        turn boards [] 0 numbers
+                    | [] -> turn boards lastWinner lastWinExclNo xs
+                    | winners ->
+                        let boards = List.filter (fun b -> not (List.contains b winners)) boards
+                        turn boards (List.last winners) exclNo xs
+        turn boards Map.empty 0 numbers
 
-    let calcWinner (board: Board, exclNo: int) =
+    let calcWinner (board, exclNo) =
         Map.toList board
         |> List.filter (fun (_, (_, marked)) -> not marked)
         |> List.sumBy (fun (_, (v, _)) -> v)

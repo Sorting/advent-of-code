@@ -20,9 +20,7 @@ module Day03 =
                 |> Seq.countBy id
                 |> fun x -> Seq.maxBy snd x |> fst |> string, Seq.minBy snd x |> fst |> string
             )
-        |> Seq.fold (fun (gamma, epsilon) (g, e) -> 
-            gamma + g, epsilon + e
-        ) ("", "")
+        |> Seq.fold (fun (gamma, epsilon) (g, e) -> gamma + g, epsilon + e) ("", "")
         |> fun (gamma, epsilon) -> Convert.ToInt32(gamma, 2) * Convert.ToInt32(epsilon, 2)
     
     let part2() =
