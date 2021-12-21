@@ -29,6 +29,7 @@ let main argv =
               ((2021, 4), Year2021.Day04.solve)
               ((2021, 5), Year2021.Day05.solve)
               ((2021, 6), Year2021.Day06.solve)
+              ((2021, 7), Year2021.Day07.solve)
             ]
 
     match argv |> List.ofArray with
