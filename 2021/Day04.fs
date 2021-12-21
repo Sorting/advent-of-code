@@ -7,7 +7,7 @@ module Day04 =
 
     type Board = Map<int * int, int * bool> 
 
-    let parse (input: string): Board list * int list = 
+    let parser (input: string) = 
         let lines = input.Split('\n') |> List.ofArray
         let numbers = List.head lines |> fun x -> x.Split(',') |> Array.map int |> Array.toList
         let rec getBoards boards currentBoard y boardNumber =
@@ -27,7 +27,7 @@ module Day04 =
                     getBoards boards currentBoard (y + 1) boardNumber xs
         getBoards [] Map.empty 0 0 (List.skip 1 lines) 
     
-    let boards, numbers = getSingle 2021 4 (string >> parse)
+    let boards, numbers = getSingle 2021 4 parser 
 
     let isBingo board =
         List.exists id [
@@ -74,4 +74,4 @@ module Day04 =
     let part1() = findFirstWinner boards numbers |> calcWinner
     let part2() = findLastWinner boards numbers |> calcWinner
 
-    let solve () = printDay 2021 3 part1 part2
+    let solve () = printDay 2021 4 part1 part2
