@@ -24,7 +24,7 @@ module Day07 =
             positions
             |> List.sumBy (fun p' -> 
                 let diff = abs (p + 1 - p')
-                [1..diff] |> List.sum))
+                diff * (diff + 1) / 2))
         |> List.min
 
     let part1() = fuelFriendlyPosition positions
